@@ -42,6 +42,13 @@ export interface SampleItinerary {
   itinerary: ItineraryDay[];
 }
 
+const DESTINATION_PHOTOS: Record<string, string> = {
+  "goa-5d-relaxed": "https://images.unsplash.com/photo-1512343879784-a960bf40e7f2?auto=format&fit=crop&w=800&q=80",
+  "rajasthan-7d-culture": "https://images.unsplash.com/photo-1603262110263-fb0112e7cc33?auto=format&fit=crop&w=800&q=80",
+  "himachal-4d-adventurer": "https://images.unsplash.com/photo-1626621341517-bbf3d9990a23?auto=format&fit=crop&w=800&q=80",
+  "kerala-6d-wellness": "https://images.unsplash.com/photo-1602216056096-3b40cc0c9944?auto=format&fit=crop&w=800&q=80",
+};
+
 export default function SampleItineraryShowcase() {
   const [activeModalId, setActiveModalId] = useState<string | null>(null);
 
@@ -75,6 +82,7 @@ export default function SampleItineraryShowcase() {
         {itineraries.map((item, index) => {
           const day1 = item.itinerary[0];
           const remainingDays = item.duration - 1;
+          const photoUrl = DESTINATION_PHOTOS[item.id] ?? DESTINATION_PHOTOS["goa-5d-relaxed"];
 
           return (
             <motion.div
@@ -87,27 +95,38 @@ export default function SampleItineraryShowcase() {
               <TiltCard
                 maxTilt={6}
                 onClick={() => setActiveModalId(item.id)}
-                className="card p-6 flex flex-col justify-between h-full cursor-pointer select-none group border border-[var(--color-border)] hover:border-[var(--color-coral-mid)] transition-all duration-300 shadow-soft"
+                className="card overflow-hidden flex flex-col justify-between h-full cursor-pointer select-none group border border-[var(--color-border)] hover:border-[var(--color-coral-mid)] transition-all duration-300 shadow-soft"
               >
                 <div>
-                  {/* Top Badges */}
-                  <div className="flex items-center justify-between gap-2 mb-4">
-                    <span className="inline-flex items-center gap-1 text-[11px] font-bold px-3 py-1 rounded-full bg-[var(--color-coral-light)] text-[var(--color-coral-dark)] border border-[var(--color-coral-mid)]/30">
-                      <User className="w-3 h-3 text-[var(--color-coral)]" />
-                      {item.persona_badge}
-                    </span>
-                    <span className="inline-flex items-center gap-1 text-[11px] font-bold px-2.5 py-1 rounded-full bg-[#E6F8F4] text-[#008F73] border border-[#55EFC4]/40">
-                      <Sparkles className="w-3 h-3 text-[#00B894]" />
-                      ✨ AI Generated
-                    </span>
+                  {/* Photo Header */}
+                  <div className="h-44 w-full relative overflow-hidden img-card-container indigo-duotone-overlay">
+                    <img
+                      src={photoUrl}
+                      alt={item.title}
+                      className="w-full h-full object-cover img-card-zoom"
+                    />
+                    <div className="absolute top-3 left-3 z-10">
+                      <span className="inline-flex items-center gap-1 text-[11px] font-bold px-3 py-1 rounded-full bg-white/95 text-[var(--color-coral-dark)] shadow-xs">
+                        <User className="w-3 h-3 text-[var(--color-coral)]" />
+                        {item.persona_badge}
+                      </span>
+                    </div>
+                    <div className="absolute top-3 right-3 z-10">
+                      <span className="inline-flex items-center gap-1 text-[11px] font-bold px-2.5 py-1 rounded-full bg-black/60 backdrop-blur-md text-amber-300 shadow-xs">
+                        <Sparkles className="w-3 h-3 text-amber-300" />
+                        ✨ AI Generated
+                      </span>
+                    </div>
+                    <div className="absolute bottom-3 left-3 right-3 z-10 text-white">
+                      <h3 className="font-heading font-800 text-lg leading-snug drop-shadow-md">
+                        {item.flag} {item.title}
+                      </h3>
+                    </div>
                   </div>
 
-                  {/* Title & Metadata */}
-                  <div className="mb-3">
-                    <h3 className="font-heading font-700 text-xl text-[var(--color-text)] group-hover:text-[var(--color-coral)] transition-colors leading-snug">
-                      {item.flag} {item.title}
-                    </h3>
-                    <div className="flex items-center gap-3 text-xs text-[var(--color-muted)] font-semibold mt-1.5">
+                  {/* Body Content */}
+                  <div className="p-5">
+                    <div className="flex items-center gap-3 text-xs text-[var(--color-muted)] font-semibold mb-3">
                       <span className="flex items-center gap-1">
                         <Clock className="w-3.5 h-3.5 text-[var(--color-coral)]" /> {item.duration} Days
                       </span>
@@ -115,22 +134,26 @@ export default function SampleItineraryShowcase() {
                       <span className="flex items-center gap-1">
                         <MapPin className="w-3.5 h-3.5 text-[var(--color-teal)]" /> {item.destination}
                       </span>
+                      <span>·</span>
+                      <span className="text-[var(--color-coral-dark)] font-bold">
+                        ₹{item.budget.toLocaleString()}
+                      </span>
                     </div>
-                  </div>
 
-                  {/* Day 1 Teaser Preview */}
-                  <div className="p-4 rounded-2xl bg-[var(--color-bg)] border border-[var(--color-border)] mb-4">
-                    <div className="flex items-center justify-between mb-1.5">
-                      <span className="text-xs font-bold text-[var(--color-text)]">
-                        Day 1: {day1?.title}
-                      </span>
-                      <span className="text-[10px] font-semibold px-2 py-0.5 rounded-full bg-white text-[var(--color-muted)] border border-[var(--color-border)]">
-                        Teaser
-                      </span>
+                    {/* Day 1 Teaser Preview */}
+                    <div className="p-3.5 rounded-xl bg-[var(--color-bg)] border border-[var(--color-border)] mb-2">
+                      <div className="flex items-center justify-between mb-1">
+                        <span className="text-xs font-bold text-[var(--color-text)]">
+                          Day 1: {day1?.title}
+                        </span>
+                        <span className="text-[10px] font-semibold px-2 py-0.5 rounded-full bg-white text-[var(--color-muted)] border border-[var(--color-border)]">
+                          Teaser
+                        </span>
+                      </div>
+                      <p className="text-xs text-[var(--color-muted)] line-clamp-2 leading-relaxed font-medium">
+                        {day1?.summary}
+                      </p>
                     </div>
-                    <p className="text-xs text-[var(--color-muted)] line-clamp-2 leading-relaxed font-medium">
-                      {day1?.summary}
-                    </p>
                   </div>
                 </div>
 

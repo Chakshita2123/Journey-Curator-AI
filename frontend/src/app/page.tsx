@@ -8,6 +8,7 @@ import { Sparkles, ArrowRight, Globe, Plane, Compass, MapPin, TrendingDown } fro
 import { motion, TiltCard, CursorGlow, CountUpNumber, MagneticCard } from "@/components/motion";
 import dynamic from "next/dynamic";
 import { JourneyMap } from "@/components/JourneyFlow";
+import Hero3DScene from "@/components/Hero3DScene";
 
 const InteractiveDestinationMap = dynamic(
   () => import("@/components/InteractiveDestinationMap"),
@@ -92,8 +93,18 @@ export default function HomePage() {
           />
         </div>
 
+        {/* ── Hero Background Ambient Destination Collage with Ken Burns ── */}
+        <div className="pointer-events-none absolute top-0 inset-x-0 h-[680px] overflow-hidden -z-10 opacity-12">
+          <img
+            src="https://images.unsplash.com/photo-1524492412937-b28074a5d7da?auto=format&fit=crop&w=1600&q=80"
+            alt="Hero Background Travel Collage"
+            className="w-full h-full object-cover animate-kenburns"
+          />
+          <div className="absolute inset-0 bg-gradient-to-b from-[#F4F2FA]/60 via-[#F4F2FA]/85 to-[#F4F2FA]" />
+        </div>
+
         {/* ── Hero Section ──────────────────────────────────── */}
-        <section className="relative min-h-dvh flex flex-col items-center justify-center px-6 pt-28 pb-20 text-center max-w-6xl mx-auto">
+        <section className="relative flex flex-col items-center justify-center px-6 pt-28 pb-12 text-center max-w-6xl mx-auto">
           
           {/* Top Badge with Warm Peach Highlight */}
           <motion.div
@@ -128,8 +139,7 @@ export default function HomePage() {
             transition={{ duration: 0.55, delay: 0.3 }}
             className="mt-6 text-lg md:text-xl text-[var(--color-muted)] max-w-2xl leading-relaxed font-medium"
           >
-            Journey Curator AI predicts your exact trip cost to any destination worldwide,
-            crafts personalised day-by-day itineraries, and recommends hidden gems — in seconds.
+            Predict your trip cost anywhere in the world — and discover India&apos;s best destinations with AI-curated recommendations.
           </motion.p>
 
           {/* CTAs */}
@@ -153,68 +163,12 @@ export default function HomePage() {
               id="hero-discover-btn"
               className="flex items-center gap-2.5 px-8 py-4 rounded-2xl font-semibold btn-3d-secondary btn-shimmer text-base"
             >
-              🌏 Explore 13,000+ Spots
+              🇮🇳 Explore India&apos;s Spots
             </Link>
           </motion.div>
 
-          {/* Decorative 3D Interactive Parallax Travel Cluster */}
-          <motion.div
-            initial={{ opacity: 0, scale: 0.9, y: 30 }}
-            animate={{ opacity: 1, scale: 1, y: 0 }}
-            transition={{ duration: 0.65, delay: 0.6 }}
-            className="mt-16 relative w-full max-w-3xl mx-auto flex flex-col items-center"
-          >
-            {/* Floating Decorative Badges with Mouse Parallax */}
-            <div
-              className="absolute -top-8 -left-4 sm:left-6 z-10 transition-transform duration-300 ease-out"
-              style={{ transform: `translate3d(${mouseOffset.x * -1.5}px, ${mouseOffset.y * -1.5}px, 0)` }}
-            >
-              <div className="card px-3.5 py-2 flex items-center gap-2 bg-white/95 backdrop-blur-md shadow-coral border border-[var(--color-coral)]/20 text-xs font-bold text-[var(--color-coral)]">
-                <Plane className="w-4 h-4 text-[var(--color-coral)] animate-idle" />
-                Flight & Stay Prediction
-              </div>
-            </div>
-
-            <div
-              className="absolute -top-6 -right-4 sm:right-6 z-10 transition-transform duration-300 ease-out"
-              style={{ transform: `translate3d(${mouseOffset.x * 1.8}px, ${mouseOffset.y * 1.8}px, 0)` }}
-            >
-              <div className="card px-3.5 py-2 flex items-center gap-2 bg-white/95 backdrop-blur-md shadow-teal border border-[var(--color-teal)]/20 text-xs font-bold text-[var(--color-teal-dark)]">
-                <Compass className="w-4 h-4 text-[var(--color-teal)] animate-spin" style={{ animationDuration: "12s" }} />
-                Adventurer Vibe · 96% Match
-              </div>
-            </div>
-
-            <div
-              className="absolute -bottom-6 right-10 z-10 transition-transform duration-300 ease-out"
-              style={{ transform: `translate3d(${mouseOffset.x * -1.2}px, ${mouseOffset.y * 1.2}px, 0)` }}
-            >
-              <div className="card px-3.5 py-2 flex items-center gap-2 bg-[#FFF0EB] backdrop-blur-md border border-[#FF9776]/40 text-xs font-bold text-[#E05A36] shadow-peach">
-                <TrendingDown className="w-4 h-4 text-[#E05A36]" />
-                $320 Savings Tip
-              </div>
-            </div>
-
-            {/* 3D Stacked Deck Sample Trip Cards */}
-            <div className="flex flex-wrap justify-center gap-4 px-2 py-4">
-              {SOCIAL_PROOF.map(({ flag, dest, cost, days, rotate }, i) => (
-                <TiltCard
-                  key={dest}
-                  maxTilt={10}
-                  className="card px-5 py-3.5 flex items-center gap-3 text-sm cursor-pointer select-none border-t border-white/80"
-                  style={{
-                    transform: `rotate(${rotate})`,
-                  }}
-                >
-                  <span className="text-2xl">{flag}</span>
-                  <div className="text-left">
-                    <p className="font-semibold text-[var(--color-text)] text-xs">{dest} · {days}</p>
-                    <p className="coral-text font-bold text-sm">{cost}</p>
-                  </div>
-                </TiltCard>
-              ))}
-            </div>
-          </motion.div>
+          {/* Signature 3D Parallax Hero Scene */}
+          <Hero3DScene />
         </section>
 
         {/* ── Stats Section (Scroll Animated Count-Up Numbers) ─ */}

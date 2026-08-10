@@ -5,18 +5,66 @@ import { motion, TiltCard, CursorGlow } from "@/components/motion";
 import { JourneyBreadcrumb, JourneyNextStep } from "@/components/JourneyFlow";
 
 const PLACES = [
-  { flag: "🇮🇳", name: "Taj Mahal",       city: "Agra",      category: "Historic",  rating: "4.9", fee: "₹250" },
-  { flag: "🇮🇳", name: "Dal Lake",         city: "Srinagar",  category: "Natural",   rating: "4.8", fee: "₹200" },
-  { flag: "🇮🇳", name: "Hawa Mahal",       city: "Jaipur",    category: "Historic",  rating: "4.5", fee: "₹75"  },
-  { flag: "🇮🇳", name: "Kerala Backwaters",city: "Alleppey",  category: "Natural",   rating: "4.9", fee: "₹40"  },
-  { flag: "🇮🇳", name: "Golden Temple",    city: "Amritsar",  category: "Religious", rating: "4.8", fee: "Free" },
-  { flag: "🇮🇳", name: "Amber Fort",       city: "Jaipur",    category: "Historic",  rating: "4.8", fee: "₹50"  },
+  {
+    flag: "🕌",
+    name: "Taj Mahal",
+    city: "Agra",
+    category: "Historic",
+    rating: "4.9",
+    fee: "₹250",
+    image: "https://images.unsplash.com/photo-1564507592333-c60657eea523?auto=format&fit=crop&w=600&q=80",
+  },
+  {
+    flag: "🚣",
+    name: "Dal Lake",
+    city: "Srinagar",
+    category: "Natural",
+    rating: "4.8",
+    fee: "Free",
+    image: "https://images.unsplash.com/photo-1595815771614-ade9d652a65d?auto=format&fit=crop&w=600&q=80",
+  },
+  {
+    flag: "🏰",
+    name: "Hawa Mahal",
+    city: "Jaipur",
+    category: "Historic",
+    rating: "4.5",
+    fee: "₹75",
+    image: "https://images.unsplash.com/photo-1599661046827-dacff0c0f09a?auto=format&fit=crop&w=600&q=80",
+  },
+  {
+    flag: "🌴",
+    name: "Kerala Backwaters",
+    city: "Alleppey",
+    category: "Natural",
+    rating: "4.9",
+    fee: "Free",
+    image: "https://images.unsplash.com/photo-1602216056096-3b40cc0c9944?auto=format&fit=crop&w=600&q=80",
+  },
+  {
+    flag: "🛕",
+    name: "Golden Temple",
+    city: "Amritsar",
+    category: "Religious",
+    rating: "4.9",
+    fee: "Free",
+    image: "https://images.unsplash.com/photo-1514222709107-a180c68d72b4?auto=format&fit=crop&w=600&q=80",
+  },
+  {
+    flag: "🏰",
+    name: "Amber Fort",
+    city: "Jaipur",
+    category: "Historic",
+    rating: "4.8",
+    fee: "₹50",
+    image: "https://images.unsplash.com/photo-1603262110263-fb0112e7cc33?auto=format&fit=crop&w=600&q=80",
+  },
 ];
 
 const CATEGORY_COLORS: Record<string, { bg: string; text: string }> = {
   Historic:  { bg: "var(--color-coral-light)",  text: "var(--color-coral-dark)" },
   Natural:   { bg: "var(--color-teal-light)",   text: "var(--color-teal-dark)" },
-  Religious: { bg: "var(--color-teal-light)", text: "var(--color-teal-dark)" },
+  Religious: { bg: "var(--color-peach-light)", text: "var(--color-peach-dark)" },
   Cultural:  { bg: "var(--color-success-light)",text: "var(--color-success)" },
 };
 
@@ -45,19 +93,18 @@ export default function DiscoverPage() {
             className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full text-xs font-semibold mb-4 shadow-xs"
             style={{ background: "var(--color-teal-light)", color: "var(--color-teal-dark)" }}
           >
-            ⚡ Phase 4 · 13,000+ Destinations · Step 3
+            🇮🇳 Phase 4 Recommender · India Dataset (Expanding Globally) · Step 3
           </div>
           <h1 className="font-heading font-800 text-4xl text-[var(--color-text)] leading-tight mb-3">
-            Discover the World 🌏
+            Discover India&apos;s Destinations 🇮🇳
           </h1>
-          <p className="text-[var(--color-muted)] text-sm max-w-sm mx-auto leading-relaxed font-medium">
-            AI-ranked recommendations starting with India&apos;s best — and expanding globally.
-            Get personalised picks by season, crowd level, and your travel style.
+          <p className="text-[var(--color-muted)] text-sm max-w-md mx-auto leading-relaxed font-medium">
+            AI-ranked recommendations currently focused on India&apos;s top tourist places — with architecture built for global expansion in upcoming phases.
           </p>
         </motion.div>
 
-        {/* Preview cards with 3D Tilt & Staggered View Entrance */}
-        <div className="max-w-3xl mx-auto grid sm:grid-cols-2 md:grid-cols-3 gap-4 mb-10">
+        {/* Preview cards with 3D Tilt & Image Zoom */}
+        <div className="max-w-4xl mx-auto grid sm:grid-cols-2 md:grid-cols-3 gap-5 mb-12">
           {PLACES.map((place, i) => {
             const cat = CATEGORY_COLORS[place.category] ?? CATEGORY_COLORS.Historic;
             return (
@@ -68,25 +115,43 @@ export default function DiscoverPage() {
                 viewport={{ once: true }}
                 transition={{ duration: 0.4, delay: i * 0.08 }}
               >
-                <TiltCard maxTilt={7} className="card p-5 flex flex-col gap-3 h-full cursor-pointer select-none">
-                  <div className="flex items-center justify-between">
-                    <span
-                      className="text-xs font-semibold px-2.5 py-1 rounded-full"
-                      style={{ background: cat.bg, color: cat.text }}
-                    >
-                      {place.category}
-                    </span>
-                    <span className="text-xs text-[var(--color-coral)] font-bold">★ {place.rating}</span>
+                <TiltCard maxTilt={7} className="card overflow-hidden flex flex-col h-full cursor-pointer select-none border border-[var(--color-border)] shadow-soft group">
+                  {/* Real Photo Card Header */}
+                  <div className="h-36 w-full relative overflow-hidden img-card-container indigo-duotone-overlay">
+                    <img
+                      src={place.image}
+                      alt={place.name}
+                      className="w-full h-full object-cover img-card-zoom"
+                    />
+                    <div className="absolute top-2.5 left-2.5 z-10">
+                      <span
+                        className="text-[10px] font-bold px-2.5 py-1 rounded-full shadow-xs"
+                        style={{ background: "rgba(255,255,255,0.95)", color: cat.text }}
+                      >
+                        {place.category}
+                      </span>
+                    </div>
+                    <div className="absolute top-2.5 right-2.5 z-10">
+                      <span className="text-[10px] font-bold px-2 py-1 rounded-full bg-black/60 backdrop-blur-md text-amber-300 shadow-xs">
+                        ★ {place.rating}
+                      </span>
+                    </div>
                   </div>
-                  <div>
-                    <p className="font-heading font-700 text-[var(--color-text)] text-base">
-                      {place.flag} {place.name}
-                    </p>
-                    <p className="text-xs text-[var(--color-muted)] mt-0.5">{place.city}</p>
-                  </div>
-                  <div className="flex items-center justify-between mt-auto">
-                    <span className="text-xs font-medium text-[var(--color-muted)]">Entry: {place.fee}</span>
-                    <div className="skeleton h-3 w-14 rounded-lg" />
+
+                  {/* Card Content Body */}
+                  <div className="p-4 flex flex-col flex-1 justify-between gap-3 bg-white">
+                    <div>
+                      <p className="font-heading font-700 text-[var(--color-text)] text-base leading-snug group-hover:text-[var(--color-coral)] transition-colors">
+                        {place.flag} {place.name}
+                      </p>
+                      <p className="text-xs text-[var(--color-muted)] font-medium mt-0.5">{place.city}</p>
+                    </div>
+                    <div className="flex items-center justify-between mt-auto pt-2 border-t border-[var(--color-border)]">
+                      <span className="text-xs font-semibold text-[var(--color-muted)]">Entry: <strong className="text-[var(--color-text)]">{place.fee}</strong></span>
+                      <span className="text-xs font-bold text-[var(--color-coral)] group-hover:translate-x-1 transition-transform">
+                        Explore →
+                      </span>
+                    </div>
                   </div>
                 </TiltCard>
               </motion.div>

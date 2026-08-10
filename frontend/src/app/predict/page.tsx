@@ -29,18 +29,22 @@ export default function PredictPage() {
           transition={{ duration: 0.5 }}
           className="max-w-xl mx-auto mb-8 text-center"
         >
-          <div
-            className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full text-xs font-semibold mb-4 shadow-xs"
-            style={{ background: "var(--color-coral-light)", color: "var(--color-coral)" }}
-          >
-            ✨ Powered by XGBoost · Step 2
+          <div className="flex flex-wrap items-center justify-center gap-2 mb-4">
+            <div
+              className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full text-xs font-semibold shadow-xs"
+              style={{ background: "var(--color-coral-light)", color: "var(--color-coral)" }}
+            >
+              ✨ Powered by XGBoost · Step 2
+            </div>
+            <div className="inline-flex items-center gap-1.5 px-3.5 py-1.5 rounded-full text-xs font-bold bg-[#E6F8F4] text-[#008F73] border border-[#55EFC4]/40 shadow-xs">
+              🌐 Works Worldwide
+            </div>
           </div>
           <h1 className="font-heading font-800 text-4xl text-[var(--color-text)] leading-tight">
             Predict Your <span className="coral-text">Trip Cost</span>
           </h1>
           <p className="mt-3 text-[var(--color-muted)] text-sm leading-relaxed font-medium">
-            Fill in 5 quick steps — our AI model estimates your total cost and
-            suggests ways to save if you&apos;re over budget.
+            Global coverage for any destination worldwide — our ML model estimates your total cost and suggests ways to save if you&apos;re over budget.
           </p>
         </motion.div>
 

@@ -90,6 +90,14 @@ const QUESTIONS = [
   },
 ];
 
+const PERSONA_PHOTOS: Record<string, string> = {
+  Adventurer: "https://images.unsplash.com/photo-1506744038136-46273834b3fb?auto=format&fit=crop&w=800&q=80",
+  "Relaxed Vacationer": "https://images.unsplash.com/photo-1507525428034-b723cf961d3e?auto=format&fit=crop&w=800&q=80",
+  "Culture & Food Explorer": "https://images.unsplash.com/photo-1599661046827-dacff0c0f09a?auto=format&fit=crop&w=800&q=80",
+  "Budget Backpacker": "https://images.unsplash.com/photo-1501555088652-021faa106b9b?auto=format&fit=crop&w=800&q=80",
+  "Luxury Wellness Seeker": "https://images.unsplash.com/photo-1540555700478-4be289fbecef?auto=format&fit=crop&w=800&q=80",
+};
+
 export default function PersonaQuiz() {
   const router = useRouter();
   const { setPersona } = useUserJourney();
@@ -166,25 +174,38 @@ export default function PersonaQuiz() {
         className="w-full max-w-4xl mx-auto flex flex-col gap-6"
       >
         {/* Main Result Card */}
-        <div className="card p-8 text-center relative overflow-hidden shadow-coral">
-          <div className="text-5xl mb-3 animate-bounce-in">🎭</div>
-          <div
-            className="inline-flex items-center gap-1.5 px-3.5 py-1 rounded-full text-xs font-semibold uppercase tracking-wider mb-3"
-            style={{ background: "var(--color-coral-light)", color: "var(--color-coral)" }}
-          >
-            Your AI Persona Match · {(result.confidence * 100).toFixed(0)}% Match
+        <div className="card overflow-hidden text-center relative shadow-coral border border-[var(--color-border)] bg-white">
+          {/* Persona Hero Photography Banner */}
+          <div className="h-48 md:h-56 w-full relative overflow-hidden img-card-container indigo-duotone-overlay">
+            <img
+              src={PERSONA_PHOTOS[result.persona] ?? PERSONA_PHOTOS.Adventurer}
+              alt={result.title}
+              className="w-full h-full object-cover img-card-zoom"
+            />
+            <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/30 to-transparent" />
+            <div className="absolute top-4 left-4 z-10">
+              <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-bold bg-white/95 text-[var(--color-coral-dark)] shadow-xs">
+                <Sparkles className="w-3.5 h-3.5 text-[var(--color-coral)]" />
+                {(result.confidence * 100).toFixed(0)}% Match Confidence
+              </span>
+            </div>
+            <div className="absolute bottom-4 left-6 right-6 z-10 text-white text-left">
+              <span className="text-3xl mb-1 block drop-shadow-md">🎭</span>
+              <h2 className="font-heading font-800 text-2xl md:text-3xl drop-shadow-md">
+                {result.title}
+              </h2>
+            </div>
           </div>
-          <h2 className="font-heading font-800 text-3xl coral-text mb-2">
-            {result.title}
-          </h2>
-          <p className="text-[var(--color-text)] text-base font-medium max-w-md mx-auto leading-relaxed mb-4">
-            {result.description}
-          </p>
 
-          <div className="rounded-2xl p-4 text-left text-sm mb-6" style={{ background: "var(--color-surface-warm)", border: "1px solid rgba(108,92,231,0.14)" }}>
-            <p className="font-semibold text-[var(--color-coral)] mb-1">💡 Curator Tip:</p>
-            <p className="text-[var(--color-text)]">{result.tip}</p>
-          </div>
+          <div className="p-6 md:p-8">
+            <p className="text-[var(--color-text)] text-base font-medium max-w-lg mx-auto leading-relaxed mb-6">
+              {result.description}
+            </p>
+
+            <div className="rounded-2xl p-4 text-left text-sm mb-6" style={{ background: "var(--color-surface-warm)", border: "1px solid rgba(108,92,231,0.14)" }}>
+              <p className="font-semibold text-[var(--color-coral)] mb-1">💡 Curator Tip:</p>
+              <p className="text-[var(--color-text)]">{result.tip}</p>
+            </div>
 
           {/* Recommended Styles */}
           <div className="text-left mb-6">

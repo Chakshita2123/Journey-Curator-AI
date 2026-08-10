@@ -1,7 +1,7 @@
 "use client";
 
-import { useEffect, useRef, useState } from "react";
-import { MapPin, Star, Compass, Tag, Sparkles, Navigation, ArrowRight, X } from "lucide-react";
+import { useEffect, useRef, useState, useMemo } from "react";
+import { MapPin, Star, Compass, Tag, Sparkles, Navigation, ArrowRight, X, Play, Pause } from "lucide-react";
 import { motion, AnimatePresence } from "@/components/motion";
 import Link from "next/link";
 
@@ -310,7 +310,6 @@ function loadLeafletScript(): Promise<any> {
       return resolve((window as any).L);
     }
 
-    // Inject CSS
     if (!document.getElementById("leaflet-cdn-css")) {
       const link = document.createElement("link");
       link.id = "leaflet-cdn-css";
@@ -319,7 +318,6 @@ function loadLeafletScript(): Promise<any> {
       document.head.appendChild(link);
     }
 
-    // Inject JS
     const existingScript = document.getElementById("leaflet-cdn-js");
     if (existingScript) {
       existingScript.addEventListener("load", () => resolve((window as any).L));
@@ -338,12 +336,22 @@ function loadLeafletScript(): Promise<any> {
 export default function InteractiveDestinationMap() {
   const mapContainerRef = useRef<HTMLDivElement>(null);
   const mapInstanceRef = useRef<any>(null);
-  const markersRef = useRef<any[]>([]);
+  const markersMapRef = useRef<Map<string, any>>(new Map());
 
   const [selectedCategory, setSelectedCategory] = useState<string>("All");
-  const [selectedDest, setSelectedDest] = useState<MapDestination | null>(DESTINATIONS[0]);
+  const [currentIndex, setCurrentIndex] = useState<number>(0);
+  const [isAutoRotating, setIsAutoRotating] = useState<boolean>(true);
   const [isLoaded, setIsLoaded] = useState<boolean>(false);
   const [leafletLib, setLeafletLib] = useState<any>(null);
+
+  // Filtered destinations based on category
+  const filteredDestinations = useMemo(() => {
+    return selectedCategory === "All"
+      ? DESTINATIONS
+      : DESTINATIONS.filter((d) => d.category === selectedCategory);
+  }, [selectedCategory]);
+
+  const selectedDest = filteredDestinations[currentIndex] ?? filteredDestinations[0] ?? null;
 
   // Load Leaflet dynamically via CDN
   useEffect(() => {
@@ -388,37 +396,66 @@ export default function InteractiveDestinationMap() {
     };
   }, []);
 
-  // Update Markers based on Category Filter
+  // Auto-Rotation Timer Loop (every 4.5 seconds)
+  useEffect(() => {
+    if (!isAutoRotating || filteredDestinations.length === 0 || !isLoaded) return;
+
+    const timer = setInterval(() => {
+      setCurrentIndex((prevIndex) => {
+        const nextIndex = (prevIndex + 1) % filteredDestinations.length;
+        const nextDest = filteredDestinations[nextIndex];
+
+        if (mapInstanceRef.current && nextDest) {
+          mapInstanceRef.current.flyTo([nextDest.lat, nextDest.lng], 6.5, {
+            duration: 1.2,
+          });
+        }
+        return nextIndex;
+      });
+    }, 4500);
+
+    return () => clearInterval(timer);
+  }, [isAutoRotating, filteredDestinations, isLoaded]);
+
+  // Update Markers & Active Pin Pulsing
   useEffect(() => {
     if (!mapInstanceRef.current || !isLoaded || !leafletLib) return;
 
     const L = leafletLib;
     const map = mapInstanceRef.current;
 
-    // Clear existing markers
-    markersRef.current.forEach((m) => m.remove());
-    markersRef.current = [];
+    // Clear existing markers map
+    markersMapRef.current.forEach((m) => m.remove());
+    markersMapRef.current.clear();
 
-    const filtered = selectedCategory === "All"
-      ? DESTINATIONS
-      : DESTINATIONS.filter((d) => d.category === selectedCategory);
-
-    filtered.forEach((dest) => {
+    filteredDestinations.forEach((dest, idx) => {
+      const isActive = dest.id === selectedDest?.id;
       const catStyle = CATEGORY_STYLES[dest.category] ?? CATEGORY_STYLES.Historic;
 
-      const customIcon = L.divIcon({
-        className: "custom-map-pin",
-        iconSize: [36, 36],
-        iconAnchor: [18, 36],
-        popupAnchor: [0, -32],
-        html: `
-          <div class="relative group cursor-pointer transition-transform duration-200 hover:scale-125" style="width: 36px; height: 36px;">
-            <div class="absolute inset-0 rounded-full animate-ping opacity-30" style="background-color: ${catStyle.dot};"></div>
-            <div class="relative z-10 w-9 h-9 rounded-full flex items-center justify-center text-sm shadow-md border-2 border-white transition-all duration-200" style="background: ${catStyle.bg}; border-color: ${catStyle.border};">
+      // Active Pin scale-up & glowing pulse ring vs Normal Pin
+      const pinHtml = isActive
+        ? `
+          <div class="relative group cursor-pointer transition-all duration-300 scale-135 z-30" style="width: 44px; height: 44px;">
+            <div class="absolute -inset-2 rounded-full animate-ping opacity-60" style="background-color: ${catStyle.dot};"></div>
+            <div class="relative z-10 w-11 h-11 rounded-full flex items-center justify-center text-base shadow-2xl border-3 border-white ring-4 ring-[#6C5CE7]/40" style="background: ${catStyle.bg}; border-color: ${catStyle.border};">
               <span>${dest.flag}</span>
             </div>
           </div>
-        `,
+        `
+        : `
+          <div class="relative group cursor-pointer transition-all duration-300 hover:scale-125 opacity-80 hover:opacity-100" style="width: 34px; height: 34px;">
+            <div class="relative z-10 w-8 h-8 rounded-full flex items-center justify-center text-xs shadow-md border-2 border-white" style="background: ${catStyle.bg}; border-color: ${catStyle.border};">
+              <span>${dest.flag}</span>
+            </div>
+          </div>
+        `;
+
+      const customIcon = L.divIcon({
+        className: "custom-map-pin",
+        iconSize: isActive ? [44, 44] : [34, 34],
+        iconAnchor: isActive ? [22, 44] : [17, 34],
+        popupAnchor: [0, -32],
+        html: pinHtml,
       });
 
       const marker = L.marker([dest.lat, dest.lng], { icon: customIcon }).addTo(map);
@@ -450,14 +487,16 @@ export default function InteractiveDestinationMap() {
       marker.on("mouseover", () => marker.openPopup());
       marker.on("mouseout", () => marker.closePopup());
 
+      // Manual Click pauses auto-rotation & updates active index
       marker.on("click", () => {
-        setSelectedDest(dest);
-        map.flyTo([dest.lat, dest.lng], 7, { duration: 1.2 });
+        setIsAutoRotating(false);
+        setCurrentIndex(idx);
+        map.flyTo([dest.lat, dest.lng], 6.5, { duration: 1.2 });
       });
 
-      markersRef.current.push(marker);
+      markersMapRef.current.set(dest.id, marker);
     });
-  }, [selectedCategory, isLoaded, leafletLib]);
+  }, [selectedCategory, currentIndex, selectedDest, isLoaded, leafletLib, filteredDestinations]);
 
   const categories = ["All", "Historic", "Natural", "Religious", "Cultural", "Adventure"];
 
@@ -479,55 +518,85 @@ export default function InteractiveDestinationMap() {
           Explore India on the <span className="coral-text">Interactive Map</span>
         </h2>
         <p className="text-[var(--color-muted)] max-w-lg mx-auto font-medium text-sm leading-relaxed">
-          Hover over map pins to discover top-rated destinations, entry fees, and categories. Click any pin to inspect detailed trip recommendations.
+          Hover over map pins to discover top-rated destinations. Auto-rotating showcase cycles through all featured spots (click any pin to pause and explore).
         </p>
       </motion.div>
 
-      {/* Filter Tabs */}
-      <div className="flex flex-wrap items-center justify-center gap-2 mb-6">
-        {categories.map((cat) => {
-          const isActive = selectedCategory === cat;
-          return (
-            <button
-              key={cat}
-              onClick={() => setSelectedCategory(cat)}
-              className={`px-4 py-2 rounded-xl text-xs font-semibold transition-all duration-200 flex items-center gap-1.5 cursor-pointer ${
-                isActive
-                  ? "bg-[#6C5CE7] text-white shadow-coral"
-                  : "bg-white text-[var(--color-muted)] hover:text-[var(--color-text)] border border-[var(--color-border)] shadow-xs hover:border-[var(--color-coral-mid)]"
-              }`}
-            >
-              {cat === "All" && "🌐 All Places"}
-              {cat === "Historic" && "🏰 Historic"}
-              {cat === "Natural" && "🌲 Natural"}
-              {cat === "Religious" && "🛕 Religious"}
-              {cat === "Cultural" && "🎭 Cultural"}
-              {cat === "Adventure" && "🏔️ Adventure"}
-            </button>
-          );
-        })}
+      {/* Filter Tabs & Auto-Play Status Toggle */}
+      <div className="flex flex-wrap items-center justify-between gap-3 mb-6">
+        <div className="flex flex-wrap items-center gap-2">
+          {categories.map((cat) => {
+            const isActive = selectedCategory === cat;
+            return (
+              <button
+                key={cat}
+                onClick={() => {
+                  setSelectedCategory(cat);
+                  setCurrentIndex(0);
+                  setIsAutoRotating(true);
+                }}
+                className={`px-4 py-2 rounded-xl text-xs font-semibold transition-all duration-200 flex items-center gap-1.5 cursor-pointer ${
+                  isActive
+                    ? "bg-[#6C5CE7] text-white shadow-coral"
+                    : "bg-white text-[var(--color-muted)] hover:text-[var(--color-text)] border border-[var(--color-border)] shadow-xs hover:border-[var(--color-coral-mid)]"
+                }`}
+              >
+                {cat === "All" && "🌐 All Places"}
+                {cat === "Historic" && "🏰 Historic"}
+                {cat === "Natural" && "🌲 Natural"}
+                {cat === "Religious" && "🛕 Religious"}
+                {cat === "Cultural" && "🎭 Cultural"}
+                {cat === "Adventure" && "🏔️ Adventure"}
+              </button>
+            );
+          })}
+        </div>
+
+        {/* Auto-Play Toggle Controls */}
+        <button
+          onClick={() => setIsAutoRotating(!isAutoRotating)}
+          className={`inline-flex items-center gap-2 px-4 py-2 rounded-xl text-xs font-bold transition-all duration-200 cursor-pointer shadow-xs border ${
+            isAutoRotating
+              ? "bg-[#E6F8F4] text-[#008F73] border-[#55EFC4]/50 hover:bg-[#d0f3eb]"
+              : "bg-[#FFF0EB] text-[#E05A36] border-[#FF9776]/50 hover:bg-[#ffe3da]"
+          }`}
+        >
+          {isAutoRotating ? (
+            <>
+              <Pause className="w-3.5 h-3.5 fill-[#008F73] text-[#008F73]" />
+              <span>Auto-Play Active (Pause)</span>
+            </>
+          ) : (
+            <>
+              <Play className="w-3.5 h-3.5 fill-[#E05A36] text-[#E05A36]" />
+              <span>Resume Auto-Play</span>
+            </>
+          )}
+        </button>
       </div>
 
       {/* Main Map Wrapper Container */}
       <div className="card p-3 md:p-4 rounded-3xl border border-[var(--color-border)] shadow-soft relative overflow-hidden bg-white">
         <div
           ref={mapContainerRef}
-          className="w-full h-[440px] md:h-[480px] rounded-2xl z-10"
+          className="w-full h-[450px] md:h-[490px] rounded-2xl z-10"
         />
 
-        {/* Selected Pin Info Card (Overlay / Drawer) */}
-        <AnimatePresence>
+        {/* Selected Pin Info Card with Smooth Fade + Slide Animation */}
+        <AnimatePresence mode="wait">
           {selectedDest && (
             <motion.div
-              initial={{ opacity: 0, y: 30, scale: 0.95 }}
+              key={selectedDest.id}
+              initial={{ opacity: 0, y: 24, scale: 0.95 }}
               animate={{ opacity: 1, y: 0, scale: 1 }}
-              exit={{ opacity: 0, y: 20, scale: 0.95 }}
-              transition={{ duration: 0.3 }}
+              exit={{ opacity: 0, y: -16, scale: 0.95 }}
+              transition={{ duration: 0.45, ease: "easeOut" }}
               className="absolute bottom-6 left-6 right-6 md:left-8 md:right-auto md:max-w-md z-20 bg-white/95 backdrop-blur-md p-5 rounded-2xl border border-[var(--color-border-mid)] shadow-coral"
             >
               <button
-                onClick={() => setSelectedDest(null)}
+                onClick={() => setIsAutoRotating(false)}
                 className="absolute top-3.5 right-3.5 p-1 rounded-full text-[var(--color-muted)] hover:bg-[var(--color-bg)] transition-colors cursor-pointer"
+                title="Pause Auto-Rotation"
               >
                 <X className="w-4 h-4" />
               </button>
@@ -549,6 +618,9 @@ export default function InteractiveDestinationMap() {
                     </span>
                     <span className="text-xs font-bold text-[#E05A36] flex items-center gap-0.5">
                       <Star className="w-3.5 h-3.5 fill-[#FF9776] text-[#E05A36]" /> {selectedDest.rating}
+                    </span>
+                    <span className="text-[10px] font-semibold text-[var(--color-muted)] ml-auto">
+                      {currentIndex + 1} of {filteredDestinations.length}
                     </span>
                   </div>
                   <h3 className="font-heading font-700 text-lg text-[var(--color-text)] leading-tight">

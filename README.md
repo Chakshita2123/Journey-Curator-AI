@@ -6,6 +6,13 @@ Built with **Next.js 15**, **React 19**, **TailwindCSS v4**, **Framer Motion**, 
 
 ---
 
+## 🌐 Scope & Roadmap
+
+- **Cost Predictor:** Supports global destinations worldwide (trained on global travel datasets covering 138 global routes & major travel hubs).
+- **Destination Recommendations, Map & Discover:** Currently focus on India (13,000-record dataset, 74 curated destinations, 18 featured map pins) with architecture designed for global expansion in a future phase.
+
+---
+
 ## 🎨 Design & Aesthetic System
 
 The platform features a modern tech product aesthetic inspired by Linear and Notion, built around an elevated 3-accent color palette:
