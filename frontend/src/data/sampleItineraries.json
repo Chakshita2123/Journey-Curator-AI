@@ -1,0 +1,320 @@
+[
+  {
+    "id": "goa-5d-relaxed",
+    "title": "Goa Coastal Unwind & Beach Escape",
+    "flag": "🌴",
+    "destination": "Goa",
+    "duration": 5,
+    "persona": "Relaxed Vacationer",
+    "persona_title": "The Coastal Unwinder",
+    "persona_badge": "Relaxed Vacationer",
+    "group_size": "2 Travelers",
+    "budget": 35000,
+    "accommodation_type": "Beachfront Resort",
+    "transportation_type": "Flight & Scooter Rental",
+    "cost_summary": "Estimated total cost of ₹35,000 for 2 people covering beachfront resort, meals at shacks, scooter rental, and water activities.",
+    "budget_advice": "Rent a scooty for ₹400/day instead of taxis to save 70% on local transit. Eat at local South Goa beach shacks for fresh seafood at reasonable prices.",
+    "generated_by": "gemini",
+    "itinerary": [
+      {
+        "day": 1,
+        "title": "Arrival in North Goa & Vagator Sunset",
+        "summary": "Touchdown at Dabolim/Mopa airport, check into your boutique resort, and spend a peaceful evening watching the sunset at Vagator Beach.",
+        "attractions": ["Vagator Beach", "Chapora Fort Viewpoint", "Ozran Little Beach"],
+        "restaurants": ["Curlies Beach Shack", "Thalassa Mediterranean Restaurant", "Bean Me Up Cafe"],
+        "route_suggestion": "Smooth 45-min taxi drive from airport to Vagator resort; 10-min walk to the beach cliffs.",
+        "weather_note": "Pleasant coastal breeze, 28°C. Perfect for outdoor sunset seating.",
+        "packing": ["Sunscreen SPF 50", "Polarized Sunglasses", "Linen Shirt", "Flip-flops"],
+        "notes": "Head to Chapora Fort around 5:15 PM for prime golden-hour photos."
+      },
+      {
+        "day": 2,
+        "title": "Heritage Panjim & Fontainhas Latin Quarter",
+        "summary": "Explore the colorful Portuguese architecture of Fontainhas, take a Mandovi river sunset cruise, and indulge in Goan fish curry.",
+        "attractions": ["Fontainhas Latin Quarter", "Immaculate Conception Church", "Mandovi River Promenade"],
+        "restaurants": ["Viva Panjim (Traditional Goan)", "Kokni Kanteen", "Joseph Bar"],
+        "route_suggestion": "Ride scooty 25 mins south from Vagator to Panjim along the picturesque NH66.",
+        "weather_note": "Warm morning (30°C); carry water and wear breathable cotton clothes for walking.",
+        "packing": ["Walking Shoes", "Reusable Water Bottle", "Camera / Smartphone", "Light Hat"],
+        "notes": "Stop by Joseph Bar in Fontainhas for craft beer and local snacks in the evening."
+      },
+      {
+        "day": 3,
+        "title": "South Goa Serenity & Palolem Beach Kayaking",
+        "summary": "Escape the bustle to tranquil South Goa. Enjoy early morning kayaking among dolphins at Palolem and relax at Agonda Beach.",
+        "attractions": ["Palolem Beach Lagoon", "Butterfly Beach Kayak Spot", "Agonda Beach Cove"],
+        "restaurants": ["Dropadi Beach Shack", "Magic Park Cafe", "Zest Vegan Cafe"],
+        "route_suggestion": "Scenic 1.5 hr coastal drive south to Palolem; scenic palm-fringed roads throughout.",
+        "weather_note": "Sunny and clear skies (29°C); ideal water clarity for kayaking.",
+        "packing": ["Swimwear", "Dry Bag for Electronics", "Waterproof Sunscreen", "Beach Towel"],
+        "notes": "Book a guided kayak session early morning (7:30 AM) for dolphin sightings."
+      },
+      {
+        "day": 4,
+        "title": "Spice Plantation Tour & Dudhsagar Waterfall Drive",
+        "summary": "Visit an organic spice plantation in Ponda with authentic buffet lunch, followed by a scenic drive towards the Western Ghats foothills.",
+        "attractions": ["Sahakari Spice Farm", "Safa Masjid Ponda", "Dudhsagar Foothills View"],
+        "restaurants": ["Spice Farm Traditional Buffet", "Ritish Restobar", "Bhatthi Village Restaurant"],
+        "route_suggestion": "Drive inland 40 mins toward Ponda; well-paved interior roads lined with lush greenery.",
+        "weather_note": "Slightly cooler inland near forest trails (26°C); light humidity.",
+        "packing": ["Insect Repellent Spray", "Sturdy Trail Shoes", "Light Cotton Pants", "Hydration Pack"],
+        "notes": "Spice plantation ticket includes a guided botanical walkthrough and traditional thali."
+      },
+      {
+        "day": 5,
+        "title": "Souvenir Shopping in Anjuna & Departure",
+        "summary": "Pick up cashew nuts, feni, and handmade souvenirs at Anjuna market before a final lazy brunch and departure flight.",
+        "attractions": ["Anjuna Flea Market", "Baga Creek Promenade", "Reis Magos Fort"],
+        "restaurants": ["Artjuna Garden Cafe", "Eva Cafe Anjuna", "Pousada by the Beach"],
+        "route_suggestion": "15-min ride around Anjuna/Baga, then 50-min taxi drive to airport for flight home.",
+        "weather_note": "Sunny afternoon (31°C). Check out by 11 AM and enjoy sea breeze at Artjuna.",
+        "packing": ["Extra Travel Bag for Souvenirs", "Power Bank", "Travel Documents"],
+        "notes": "Allow 2 hours airport arrival time as security queues can be busy."
+      }
+    ]
+  },
+  {
+    "id": "rajasthan-7d-culture",
+    "title": "Royal Rajasthan Forts & Heritage Trail",
+    "flag": "🏰",
+    "destination": "Rajasthan (Jaipur, Udaipur, Jodhpur)",
+    "duration": 7,
+    "persona": "Culture & Food Explorer",
+    "persona_title": "Heritage & Culinary Explorer",
+    "persona_badge": "Culture Explorer",
+    "group_size": "2 Travelers",
+    "budget": 60000,
+    "accommodation_type": "Heritage Haveli",
+    "transportation_type": "Train & Private Car",
+    "cost_summary": "Estimated total budget of ₹60,000 for 2 people including heritage hotel stays, fort entries, guided heritage walks, and royal Rajasthani dining.",
+    "budget_advice": "Buy a composite monument pass in Jaipur to save 40% on entry tickets. Travel between Jaipur, Jodhpur, and Udaipur via express trains for fast & cheap transit.",
+    "generated_by": "gemini",
+    "itinerary": [
+      {
+        "day": 1,
+        "title": "Arrival in Jaipur Pink City & Hawa Mahal",
+        "summary": "Arrive in Jaipur, check into a restored heritage Haveli, and embark on an afternoon street walk through Johari Bazaar to see Hawa Mahal.",
+        "attractions": ["Hawa Mahal (Palace of Winds)", "Johari Bazaar Market", "Albert Hall Museum"],
+        "restaurants": ["Laxmi Mishthan Bhandar (LMB)", "Tapri Central Tea House", "Rawat Mishthan Bhandar"],
+        "route_suggestion": "25-min taxi from Jaipur airport to Pink City old market quarter.",
+        "weather_note": "Warm dry climate (27°C); comfortable evening air.",
+        "packing": ["Comfortable Walking Shoes", "Modest Clothes for Temples", "Sunglasses", "Moisturizer"],
+        "notes": "Try Pyaz Kachori at Rawat and Ghewar at LMB market."
+      },
+      {
+        "day": 2,
+        "title": "Amber Fort Elephant Hill & Jal Mahal Sunset",
+        "summary": "Explore the magnificent hilltop Amber Fort, marvel at Sheesh Mahal mirrors, and stop by Jal Mahal lake for golden hour.",
+        "attractions": ["Amber Fort & Sheesh Mahal", "Jaigarh Fort & Cannon", "Jal Mahal Lake Viewpoint"],
+        "restaurants": ["1135 AD (Amber Fort Fine Dining)", "The Rajput Room", "Chokhi Dhani Cultural Village"],
+        "route_suggestion": "30-min scenic drive north from city center to Amer hills.",
+        "weather_note": "Sunny morning (29°C); wear a wide-brim hat for open fort courtyards.",
+        "packing": ["Wide-Brim Hat", "Sunscreen", "Camera", "Cash for Local Guides"],
+        "notes": "Hire an official audio guide at Amber Fort for fascinating architectural history."
+      },
+      {
+        "day": 3,
+        "title": "City Palace Jaipur & Express Train to Jodhpur",
+        "summary": "Visit the royal City Palace museum and Jantar Mantar observatory before boarding the afternoon express train to the Blue City Jodhpur.",
+        "attractions": ["Jaipur City Palace & Peacock Gate", "Jantar Mantar UNESCO site", "Clock Tower Jodhpur"],
+        "restaurants": ["Handi Restaurant Jaipur", "Gypsy Thali Jodhpur", "Stepwell Cafe Jodhpur"],
+        "route_suggestion": "10-min rickshaw to Jaipur Junction; 4.5-hr executive train ride to Jodhpur.",
+        "weather_note": "Pleasant train ride; clear evening in Jodhpur (24°C).",
+        "packing": ["Travel Pillow", "Reading Book", "Power Bank", "Earplugs for Train"],
+        "notes": "Jodhpur Stepwell Cafe overlooks an ancient illuminated baori."
+      },
+      {
+        "day": 4,
+        "title": "Mehrangarh Fort & Blue City Heritage Alley Walk",
+        "summary": "Tour the imposing Mehrangarh Fort perched 400ft above Jodhpur, walk through blue-painted lanes of Navchokiya, and watch sunset at Jaswant Thada.",
+        "attractions": ["Mehrangarh Fort & Museum", "Jaswant Thada Royal Cenotaph", "Navchokiya Blue Streets"],
+        "restaurants": ["Indique Rooftop Restaurant", "Janta Sweet Home Jodhpur", "Kalinga Restaurant"],
+        "route_suggestion": "Auto-rickshaw up the winding fort road (15 mins); foot walk through blue lanes.",
+        "weather_note": "Bright desert sun (28°C); fort museum rooms are air-conditioned.",
+        "packing": ["Grippy Walking Shoes", "Scarf / Bandana", "Hydration Bottle"],
+        "notes": "Mehrangarh museum audio tour is widely considered one of India's best."
+      },
+      {
+        "day": 5,
+        "title": "Drive to Udaipur via Ranakpur Jain Temple",
+        "summary": "Private car drive south through the Aravalli hills to Udaipur, stopping to marvel at the 1,444 marble pillars of Ranakpur Temple.",
+        "attractions": ["Ranakpur Marble Temple", "Kumbhalgarh Fort Wall View", "Lake Pichola Promenade"],
+        "restaurants": ["Ranakpur Heritage Restaurant", "Ambrai Rooftop Udaipur", "Upre by 1559 AD"],
+        "route_suggestion": "5-hr car journey through scenic Aravalli mountain passes.",
+        "weather_note": "Cooler mountain breeze in Aravallis (23°C).",
+        "packing": ["Light Sweater / Jacket", "Socks for Temple Marble Floors", "Motion Sickness Pills if needed"],
+        "notes": "Ranakpur temple requires shoes and leather items to be deposited at entry."
+      },
+      {
+        "day": 6,
+        "title": "Udaipur City Palace & Lake Pichola Boat Cruise",
+        "summary": "Marvel at Rajasthan's largest royal palace complex, visit Jagmandir island palace by boat, and enjoy romantic dining overlooking Lake Pichola.",
+        "attractions": ["Udaipur City Palace Complex", "Jagdish Temple", "Jagmandir Island Palace Cruise"],
+        "restaurants": ["Ambrai (Lakeside Dinner)", "Charcoal by Carlsson", "Millets of Mewar"],
+        "route_suggestion": "Walking distance around Lal Ghat and Old Udaipur lakeshore.",
+        "weather_note": "Serene lakeside evening (22°C); delightful romantic atmosphere.",
+        "packing": ["Formal Evening Outfit for Lake Dinner", "Camera Lens / Phone Mount"],
+        "notes": "Pre-book Ambrai lakeside table for 7 PM to get prime palace lighting views."
+      },
+      {
+        "day": 7,
+        "title": "Saheliyon Ki Bari & Departure from Udaipur",
+        "summary": " Stroll through the lush gardens and fountains of Saheliyon Ki Bari, shop for miniature paintings, and head to Maharana Pratap Airport.",
+        "attractions": ["Saheliyon Ki Bari Gardens", "Bagore Ki Haveli Promenade", "Hathi Pol Craft Market"],
+        "restaurants": ["Cafe Edelweiss", "Jharokha Restaurant", "Grasswood Cafe"],
+        "route_suggestion": "40-min taxi drive from lake district to Udaipur airport.",
+        "weather_note": "Warm morning (26°C); peaceful garden shade.",
+        "packing": ["Souvenir Padding / Bubble Wrap for Handicrafts", "Flight Tickets"],
+        "notes": "Buy authentic Udaipur silver jewelry and Pichwai paintings at Hathi Pol."
+      }
+    ]
+  },
+  {
+    "id": "himachal-4d-adventurer",
+    "title": "Manali & Solang Valley Alpine Expedition",
+    "flag": "🏔️",
+    "destination": "Himachal Pradesh (Manali & Solang)",
+    "duration": 4,
+    "persona": "Adventurer",
+    "persona_title": "Alpine Thrill Seeker",
+    "persona_badge": "Adventurer",
+    "group_size": "4 Friends",
+    "budget": 25000,
+    "accommodation_type": "Mountain Cabin / Hostel",
+    "transportation_type": "Overnight Bus & Local Jeep",
+    "cost_summary": "Estimated total cost of ₹25,000 for group of 4 covering Volvo bus from Delhi, mountain cabin stay, paragliding at Solang, and trek gear.",
+    "budget_advice": "Book Volvo bus tickets 2 weeks in advance. Group paragliding and snow scooter packages at Solang can be bargained down by 25%.",
+    "generated_by": "gemini",
+    "itinerary": [
+      {
+        "day": 1,
+        "title": "Arrival in Old Manali & Jogini Waterfall Trek",
+        "summary": "Reach Manali via overnight Volvo, settle into Old Manali cabin, and take a warm-up 3-km forest trek to Jogini Waterfalls.",
+        "attractions": ["Jogini Waterfall Trail", "Hadimba Devi Temple", "Old Manali Wooden Cafe Lane"],
+        "restaurants": ["Cafe 1947 (Lakeside)", "Lazy Dog Lounge", "Johnson's Cafe & Bar"],
+        "route_suggestion": "15-min autorickshaw from Manali bus stand to Old Manali village.",
+        "weather_note": "Crisp mountain air (14°C day / 6°C night); sunny trail weather.",
+        "packing": ["Trekking Shoes / Boots", "Fleece Jacket", "Thermal Underwear", "Trek Pole"],
+        "notes": "Stop for fresh trout fish and hot apple cider at Johnson's Cafe."
+      },
+      {
+        "day": 2,
+        "title": "Solang Valley Paragliding & Snow Sports",
+        "summary": "Head up to Solang Valley for high-adrenaline tandem paragliding, ATV rides, and cable car rides with panoramic Himalayan views.",
+        "attractions": ["Solang Valley Paragliding Launch", "Solang Ropeway Cable Car", "Anjani Mahadev Snow Trail"],
+        "restaurants": ["Solang Alpine Dhaba", "The Chimney Restaurant Manali", "Drifter's Cafe"],
+        "route_suggestion": "45-min jeep ride north along the Beas River to Solang Valley base.",
+        "weather_note": "Chilly wind gusts at altitude (10°C); wear windproof outer layer.",
+        "packing": ["Windbreaker Jacket", "Warm Gloves", "UV Protection Goggles", "Lip Balm"],
+        "notes": "Verify paraglider pilot certification (HP Tourism approved) before flight."
+      },
+      {
+        "day": 3,
+        "title": "Atal Tunnel & Sissu Lahaul Valley Expedition",
+        "summary": "Drive through the engineering marvel Atal Tunnel (9 km) into the stark, breathtaking landscape of Sissu in Lahaul Valley.",
+        "attractions": ["Atal Tunnel North Portal", "Sissu Waterfall & Lake", "Gondhla Fort Viewpoint"],
+        "restaurants": ["Sissu Valley Himalayan Kitchen", "Tashi Dhaba Lahaul", "Rocky's Cafe"],
+        "route_suggestion": "1.5-hr jeep drive through Atal Tunnel into trans-Himalayan Lahaul.",
+        "weather_note": "Significant drop in temperature north of tunnel (5°C to 8°C); heavy jackets required.",
+        "packing": ["Heavy Down Jacket", "Woolen Cap / Beanie", "Warm Wool Socks", "Thermos Flask"],
+        "notes": "Carry cash as cellular network and ATMs are limited beyond the tunnel."
+      },
+      {
+        "day": 4,
+        "title": "Vashisht Hot Springs & Mall Road Souvenirs",
+        "summary": "Soak sore muscles in natural sulfur hot springs at Vashisht, shop for Himachali shawls on Mall Road, and board evening bus back.",
+        "attractions": ["Vashisht Natural Thermal Baths", "Manali Mall Road", "Van Vihar Pine Forest"],
+        "restaurants": ["Chopsticks Noodle Bar", "Cafe Live Old Manali", "Sher-e-Punjab Dhaba"],
+        "route_suggestion": "10-min ride to Vashisht springs; 10-min walk to Mall Road bus depot.",
+        "weather_note": "Cool afternoon (16°C); soothing warm bath springs.",
+        "packing": ["Quick-dry Towel for Hot Springs", "Handloom Shawl Bag", "Bus Ticket PDF"],
+        "notes": "Vashisht hot springs have separate clean enclosures for men and women."
+      }
+    ]
+  },
+  {
+    "id": "kerala-6d-wellness",
+    "title": "Kerala Backwaters & Tea Garden Serenity",
+    "flag": "🚣",
+    "destination": "Kerala (Munnar & Alleppey)",
+    "duration": 6,
+    "persona": "Luxury Wellness Seeker",
+    "persona_title": "Serenity & Ayurvedic Escapist",
+    "persona_badge": "Nature & Wellness",
+    "group_size": "2 Travelers",
+    "budget": 50000,
+    "accommodation_type": "Private Houseboat & Eco Resort",
+    "transportation_type": "Private AC Sedan",
+    "cost_summary": "Estimated total cost of ₹50,000 for 2 people including private luxury houseboat with all meals, tea resort in Munnar, and authentic Ayurvedic massage.",
+    "budget_advice": "Book houseboats directly from Alleppey jetty operators to save 20% commission. Choose mid-week stays for luxury tea estate resorts.",
+    "generated_by": "gemini",
+    "itinerary": [
+      {
+        "day": 1,
+        "title": "Arrival in Kochi & Scenic Drive to Munnar",
+        "summary": "Land at Cochin Airport and take a picturesque drive past Cheeyappara Waterfalls into the emerald tea hills of Munnar.",
+        "attractions": ["Cheeyappara & Valara Waterfalls", "Spice Plantation Trail", "Munnar Gap Road View"],
+        "restaurants": ["Rapsy Restaurant Munnar", "Saravana Bhavan Traditional South Indian", "Eastend Cafe"],
+        "route_suggestion": "3.5-hr winding mountain drive from Cochin Airport (COK) to Munnar town.",
+        "weather_note": "Pleasant mist and cool hill climate (18°C); refreshingly fresh air.",
+        "packing": ["Light Cardigan / Jacket", "Comfortable Car Shoes", "Camera", "Motion Sickness Band"],
+        "notes": "Stop at Cheeyappara falls for fresh coconut water and banana chips."
+      },
+      {
+        "day": 2,
+        "title": "Munnar Tea Estate Walk & Eravikulam Sanctuary",
+        "summary": "Walk through rolling tea gardens, visit the Lockhart Tea Factory museum, and spot endangered Nilgiri Tahr goats at Rajamalai.",
+        "attractions": ["Eravikulam National Park (Rajamalai)", "Lockhart Tea Estate & Factory", "Mattupetty Dam & Lake"],
+        "restaurants": ["The Tea Room at Lockhart", "Alanya Restaurant", "Guru's Hotel Munnar"],
+        "route_suggestion": "20-min drive to Rajamalai park entrance; park safari buses take you to the top.",
+        "weather_note": "Misty morning (15°C); mild sunshine by noon.",
+        "packing": ["Walking Shoes with Grip", "Rain Poncho / Umbrella", "Water Bottle"],
+        "notes": "Book Eravikulam entry tickets online to avoid 1-hour ticket counter lines."
+      },
+      {
+        "day": 3,
+        "title": "Spice Country Thekkady & Periyar Lake Boat Safari",
+        "summary": "Drive south to Thekkady (Periyar), take a bamboo raft or boat safari on Periyar Lake, and enjoy a traditional Kalaripayattu martial arts show.",
+        "attractions": ["Periyar National Wildlife Sanctuary", "Kadathanadan Kalari Centre", "Elephant Junction Sanctuary"],
+        "restaurants": ["Grandma's Cafe Thekkady", "Bamboo Heights", "Ambadi Restaurant"],
+        "route_suggestion": "3-hr scenic mountain drive from Munnar to Thekkady along Cardamom Hills.",
+        "weather_note": "Warm forest breeze (24°C); tropical greenery.",
+        "packing": ["Binoculars for Bird Watching", "Earth-Toned Clothing", "Bug Spray"],
+        "notes": "Evening Kalaripayattu and Kathakali cultural shows run from 5:00 PM to 7:00 PM."
+      },
+      {
+        "day": 4,
+        "title": "Alleppey Houseboat Check-in & Backwater Cruise",
+        "summary": "Board your luxury private Kettuvallam houseboat at Punnamada Jetty. Glide through serene palm-fringed canals while enjoying fresh Karimeen fish thali.",
+        "attractions": ["Vembanad Lake Panorama", "Punnamada Backwater Canals", "Kuttanad Paddy Fields"],
+        "restaurants": ["Houseboat Private Chef (Fresh Catch)", "Brother's Hotel Alleppey", "Cassandra Restaurant"],
+        "route_suggestion": "3.5-hr drive down to Alleppey Jetty; check-in at 12:00 PM on houseboat.",
+        "weather_note": "Warm, sunny backwater afternoon (28°C); gentle water breeze.",
+        "packing": ["Cotton Sundress / Linen Shirt", "Insect Repellent", "Board Games / Kindle"],
+        "notes": "Houseboat anchors by 5:30 PM in quiet village lagoon for overnight stay under stars."
+      },
+      {
+        "day": 5,
+        "title": "Ayurvedic Rejuvenation Spa & Marari Beach Sunset",
+        "summary": "Disembark houseboat after breakfast, experience a traditional Abhyanga oil massage at an Ayurvedic center, and relax on quiet Marari Beach.",
+        "attractions": ["Marari White Sand Beach", "Ayurvedic Spa & Wellness Retreat", "Alleppey Lighthouse View"],
+        "restaurants": ["Marari Beach Shack", "Cafe Catamaran", "Dreamers Restaurant"],
+        "route_suggestion": "30-min coastal drive north from Alleppey to Marari Beach.",
+        "weather_note": "Warm beach day (29°C); soothing ocean breeze.",
+        "packing": ["Beach Towel", "Loose Cotton Spa Attire", "Hair Clip / Scarf for Massage Oil"],
+        "notes": "Ayurvedic Abhyanga massage uses warm herb-infused oils for deep muscle relaxation."
+      },
+      {
+        "day": 6,
+        "title": "Fort Kochi Heritage & Chinese Fishing Nets Departure",
+        "summary": "Drive up to Fort Kochi, explore Jew Town antiquities, see the 500-year-old Chinese Fishing Nets, and head to Kochi Airport.",
+        "attractions": ["Fort Kochi Chinese Fishing Nets", "St. Francis Church", "Jew Town & Paradesi Synagogue"],
+        "restaurants": ["Kashi Art Cafe", "Old Harbour Hotel Restaurant", "Oceanos Seafood"],
+        "route_suggestion": "1-hr drive from Marari to Fort Kochi; 1-hr taxi from Fort Kochi to Airport.",
+        "weather_note": "Humid coastal weather (30°C); shaded heritage lanes.",
+        "packing": ["Souvenir Spices & Tea Packs", "Flight Documents"],
+        "notes": "Kashi Art Cafe serves outstanding organic coffee and chocolate cake in a garden court."
+      }
+    ]
+  }
+]

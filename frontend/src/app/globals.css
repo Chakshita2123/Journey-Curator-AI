@@ -1,0 +1,379 @@
+/* ── Fonts — must precede all other rules ────────────────── */
+@import url("https://fonts.googleapis.com/css2?family=Poppins:wght@600;700;800;900&family=Inter:wght@400;500;600&display=swap");
+
+@import "tailwindcss";
+
+/* ── Design tokens ───────────────────────────────────────── */
+@theme {
+  /* Fonts */
+  --font-heading: "Poppins", ui-sans-serif, system-ui, sans-serif;
+  --font-body:    "Inter",   ui-sans-serif, system-ui, sans-serif;
+  --font-sans:    "Inter",   ui-sans-serif, system-ui, sans-serif;
+
+  /* ── Background & surface ────────────────────────────────── */
+  --color-bg:          #F4F2FA;   /* subtle lavender-grey canvas */
+  --color-surface:     #FFFFFF;   /* card faces: pure white */
+  --color-surface-warm:#EEECFA;   /* soft indigo-tinted surface for panels */
+  --color-surface-teal:#E6F8F4;   /* soft emerald-teal surface for info panels */
+  --color-border:      rgba(45, 42, 74, 0.08); /* clean indigo-tinted border */
+  --color-border-mid:  rgba(45, 42, 74, 0.14);
+
+  /* ── Headings / Primary text ─────────────────────────────── */
+  --color-text:        #2D2A4A;   /* deep indigo heading & primary text */
+  --color-muted:       #6E6B8E;   /* refined slate-indigo muted text */
+  --color-muted-light: #B0ADCA;   /* subtle placeholder / disabled */
+
+  /* ── Primary Accent — Indigo-Violet (#6C5CE7) ────────────── */
+  --color-coral:       #6C5CE7;   /* primary accent: confident indigo-violet */
+  --color-coral-dark:  #5A4BD1;   /* deeper indigo-violet for hover/pressed */
+  --color-coral-light: #EEECFC;   /* pale indigo-violet for active bg & badges */
+  --color-coral-mid:   #A29BFE;   /* mid indigo-violet for hover borders */
+
+  /* ── Secondary Accent — Emerald Teal (#00B894) ──────────── */
+  --color-teal:        #00B894;   /* secondary accent: emerald teal */
+  --color-teal-dark:   #008F73;   /* deeper teal for text on light */
+  --color-teal-light:  #E6F8F4;   /* pale emerald teal for info panels */
+  --color-teal-mid:    #55EFC4;   /* mid teal for dividers */
+
+  /* ── 3rd Accent — Warm Peach/Sunset Coral (#FF9776) ─────── */
+  --color-peach:       #FF9776;   /* warm sunset peach for highlights */
+  --color-peach-dark:  #E05A36;   /* dark peach text */
+  --color-peach-light: #FFF0EB;   /* pale peach tint for badges */
+
+  /* ── Highlights & badges ───────────────────────────────── */
+  --color-yellow:      #00B894;
+  --color-yellow-light:#E6F8F4;
+
+  /* ── Success states ─────────────────────────────────────── */
+  --color-success:     #00B894;   /* emerald teal */
+  --color-success-light:#E6F8F4;
+
+  /* ── Warning / danger ───────────────────────────────────── */
+  --color-warn:        #F59E0B;
+  --color-danger:      #E55555;
+  --color-danger-light:#FDEAEA;
+}
+
+/* ── Base reset ──────────────────────────────────────────── */
+*, *::before, *::after { box-sizing: border-box; }
+
+html {
+  scroll-behavior: smooth;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+body {
+  background-color: var(--color-bg);
+  color: var(--color-text);
+  font-family: var(--font-body);
+  min-height: 100dvh;
+}
+
+/* ── Typography utilities ────────────────────────────────── */
+.font-heading { font-family: var(--font-heading); }
+
+/* ── Primary gradient text (indigo-violet) ───────────────── */
+.coral-text {
+  background: linear-gradient(135deg, #2D2A4A, #6C5CE7);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+/* ── Secondary gradient text (emerald teal) ─────────────── */
+.teal-text {
+  background: linear-gradient(135deg, #008F73, #00B894);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+/* ── Peach gradient text (3rd accent) ────────────────────── */
+.peach-text {
+  background: linear-gradient(135deg, #E05A36, #FF9776);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+/* ── Accent gradients ────────────────────────────────────── */
+.coral-gradient {
+  background: linear-gradient(135deg, #5A4BD1, #6C5CE7);
+}
+
+.teal-gradient {
+  background: linear-gradient(135deg, #008F73, #00B894);
+}
+
+.peach-gradient {
+  background: linear-gradient(135deg, #FF6B4A, #FF9776);
+}
+
+/* ── Card / surface — Elevated Feel ──────────────────────── */
+.card {
+  background: var(--color-surface);
+  border: 1px solid rgba(108, 92, 231, 0.10);
+  border-radius: 20px;
+  box-shadow: 0 10px 30px rgba(45, 42, 74, 0.07), 0 2px 8px rgba(45, 42, 74, 0.04);
+  transition: transform 0.25s cubic-bezier(0.22, 1, 0.36, 1), box-shadow 0.25s ease, border-color 0.25s ease;
+}
+
+.card:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 18px 42px rgba(108, 92, 231, 0.14), 0 4px 12px rgba(45, 42, 74, 0.06);
+  border-color: rgba(108, 92, 231, 0.22);
+}
+
+.card-warm {
+  background: var(--color-surface-warm);
+  border: 1px solid rgba(108, 92, 231, 0.14);
+  border-radius: 20px;
+}
+
+/* ── Soft shadows ────────────────────────────────────────── */
+.shadow-soft  { box-shadow: 0 8px 28px rgba(45, 42, 74, 0.08); }
+.shadow-coral { box-shadow: 0 10px 30px rgba(108, 92, 231, 0.26); }
+.shadow-teal  { box-shadow: 0 10px 30px rgba(0, 184, 148, 0.22); }
+.shadow-peach { box-shadow: 0 10px 30px rgba(255, 151, 118, 0.25); }
+
+/* ── Soft-3D Raised Pill Buttons ─────────────────────────── */
+.btn-3d-primary {
+  background: linear-gradient(135deg, #5A4BD1, #6C5CE7);
+  box-shadow: 0 6px 20px rgba(108, 92, 231, 0.26), inset 0 1px 0 rgba(255, 255, 255, 0.35);
+  border-top: 1px solid rgba(255, 255, 255, 0.25);
+  transition: transform 0.2s cubic-bezier(0.22, 1, 0.36, 1), box-shadow 0.2s ease;
+}
+.btn-3d-primary:hover {
+  transform: translateY(-2px) scale(1.04);
+  box-shadow: 0 10px 28px rgba(108, 92, 231, 0.36), inset 0 1px 0 rgba(255, 255, 255, 0.45);
+}
+.btn-3d-primary:active {
+  transform: translateY(0px) scale(0.98);
+  box-shadow: 0 4px 14px rgba(108, 92, 231, 0.24);
+}
+
+.btn-3d-secondary {
+  background: var(--color-teal-light);
+  color: var(--color-teal-dark);
+  border-top: 1px solid rgba(255, 255, 255, 0.8);
+  box-shadow: 0 4px 16px rgba(0, 184, 148, 0.12), inset 0 1px 0 rgba(255, 255, 255, 0.9);
+  transition: transform 0.2s cubic-bezier(0.22, 1, 0.36, 1), box-shadow 0.2s ease, background-color 0.2s ease;
+}
+.btn-3d-secondary:hover {
+  transform: translateY(-2px) scale(1.04);
+  background-color: var(--color-teal-mid);
+  box-shadow: 0 8px 24px rgba(0, 184, 148, 0.22), inset 0 1px 0 rgba(255, 255, 255, 1);
+}
+.btn-3d-secondary:active {
+  transform: translateY(0px) scale(0.98);
+}
+
+/* ── Nav link hover underline ────────────────────────────── */
+.nav-link-hover {
+  position: relative;
+}
+.nav-link-hover::after {
+  content: '';
+  position: absolute;
+  bottom: 2px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 0;
+  height: 2px;
+  background-color: var(--color-coral);
+  border-radius: 999px;
+  transition: width 0.3s ease;
+}
+.nav-link-hover:hover::after {
+  width: 60%;
+}
+
+/* ── Keyframes ───────────────────────────────────────────── */
+@keyframes float {
+  0%, 100% { transform: translateY(0px) rotate(0deg); }
+  33%       { transform: translateY(-10px) rotate(2deg); }
+  66%       { transform: translateY(-5px) rotate(-1deg); }
+}
+@keyframes mesh-float {
+  0%, 100% { transform: translate(0px, 0px) scale(1); }
+  50%      { transform: translate(25px, -18px) scale(1.06); }
+}
+@keyframes slide-up {
+  from { opacity: 0; transform: translateY(20px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+@keyframes fade-in {
+  from { opacity: 0; }
+  to   { opacity: 1; }
+}
+@keyframes pop-in {
+  from { opacity: 0; transform: scale(0.85); }
+  to   { opacity: 1; transform: scale(1); }
+}
+@keyframes shimmer {
+  0%   { background-position: -200% 0; }
+  100% { background-position:  200% 0; }
+}
+@keyframes wiggle {
+  0%, 100% { transform: rotate(0deg); }
+  25%  { transform: rotate(-5deg); }
+  75%  { transform: rotate(5deg); }
+}
+@keyframes bounce-in {
+  0%   { transform: scale(0.3); opacity: 0; }
+  50%  { transform: scale(1.05); }
+  70%  { transform: scale(0.9); }
+  100% { transform: scale(1); opacity: 1; }
+}
+
+.animate-float     { animation: float 5s ease-in-out infinite; }
+.animate-mesh      { animation: mesh-float 10s ease-in-out infinite; }
+.animate-idle      { animation: idle-bob 4s ease-in-out infinite; }
+.animate-slide-up  { animation: slide-up 0.45s cubic-bezier(0.22,1,0.36,1) both; }
+.animate-fade-in   { animation: fade-in 0.35s ease both; }
+.animate-pop-in    { animation: pop-in 0.4s cubic-bezier(0.34,1.56,0.64,1) both; }
+.animate-bounce-in { animation: bounce-in 0.6s cubic-bezier(0.34,1.56,0.64,1) both; }
+.animate-wiggle    { animation: wiggle 0.5s ease-in-out; }
+
+/* ── Sheen Sweep Button Effect ───────────────────────────── */
+.btn-shimmer {
+  position: relative;
+  overflow: hidden;
+}
+.btn-shimmer::before {
+  content: '';
+  position: absolute;
+  top: -50%;
+  left: -50%;
+  width: 200%;
+  height: 200%;
+  background: linear-gradient(
+    60deg,
+    transparent 30%,
+    rgba(255, 255, 255, 0.3) 50%,
+    transparent 70%
+  );
+  transform: rotate(30deg) translateY(-100%);
+  transition: transform 0.6s ease;
+}
+.btn-shimmer:hover::before {
+  transform: rotate(30deg) translateY(100%);
+}
+
+/* ── Feature Card Animated Gradient Border Glow ─────────── */
+.glow-border-card {
+  position: relative;
+  border-radius: 20px;
+  z-index: 1;
+}
+.glow-border-card::before {
+  content: '';
+  position: absolute;
+  inset: -2px;
+  border-radius: 22px;
+  background: linear-gradient(135deg, rgba(108, 92, 231, 0.45), rgba(0, 184, 148, 0.45), rgba(255, 151, 118, 0.45));
+  z-index: -1;
+  opacity: 0;
+  transition: opacity 0.3s ease;
+}
+.glow-border-card:hover::before {
+  opacity: 1;
+}
+
+/* ── Progress Bar Leading Edge Glow ──────────────────────── */
+.progress-glow-thumb {
+  position: relative;
+}
+.progress-glow-thumb::after {
+  content: '';
+  position: absolute;
+  right: 0;
+  top: 50%;
+  transform: translateY(-50%);
+  width: 8px;
+  height: 8px;
+  border-radius: 999px;
+  background: #FFFFFF;
+  box-shadow: 0 0 8px 2px rgba(108, 92, 231, 0.8);
+}
+
+@keyframes idle-bob {
+  0%, 100% { transform: translateY(0px) rotate(0deg); }
+  50%      { transform: translateY(-7px) rotate(3deg); }
+}
+
+/* ── Skeleton loader ─────────────────────────────────────── */
+.skeleton {
+  background: linear-gradient(90deg,
+    #E6E4F2 25%, #DAD7EE 50%, #E6E4F2 75%
+  );
+  background-size: 200% 100%;
+  animation: shimmer 1.8s infinite;
+  border-radius: 10px;
+}
+
+/* ── Input base ──────────────────────────────────────────── */
+.input-base {
+  width: 100%;
+  background: #FFFFFF;
+  border: 1.5px solid var(--color-border-mid);
+  border-radius: 14px;
+  padding: 12px 16px;
+  color: var(--color-text);
+  font-family: var(--font-body);
+  font-size: 0.9375rem;
+  transition: border-color 0.2s, box-shadow 0.2s;
+  outline: none;
+}
+.input-base:focus {
+  border-color: var(--color-coral);
+  box-shadow: 0 0 0 3px rgba(108, 92, 231, 0.14);
+}
+.input-base::placeholder { color: var(--color-muted-light); }
+
+/* ── Scrollbar ───────────────────────────────────────────── */
+::-webkit-scrollbar { width: 6px; }
+::-webkit-scrollbar-track { background: var(--color-bg); }
+::-webkit-scrollbar-thumb {
+  background: var(--color-coral-mid);
+  border-radius: 999px;
+}
+::-webkit-scrollbar-thumb:hover { background: var(--color-coral); }
+
+/* ── Leaflet Custom Map Styles ───────────────────────────── */
+.leaflet-container {
+  font-family: var(--font-body) !important;
+  border-radius: 1.5rem;
+  background-color: #F4F2FA !important;
+}
+
+/* Custom Popup Styling */
+.leaflet-popup-content-wrapper {
+  background: #FFFFFF !important;
+  color: var(--color-text) !important;
+  border: 1.5px solid var(--color-border-mid) !important;
+  border-radius: 1rem !important;
+  box-shadow: 0 12px 32px rgba(45, 42, 74, 0.16) !important;
+  padding: 0 !important;
+  overflow: hidden;
+}
+
+.leaflet-popup-content {
+  margin: 0 !important;
+  line-height: 1.4 !important;
+}
+
+.leaflet-popup-tip {
+  background: #FFFFFF !important;
+  border: 1px solid var(--color-border-mid) !important;
+  box-shadow: none !important;
+}
+
+.custom-map-pin {
+  background: transparent;
+  border: none;
+}
+
+
+

@@ -1,0 +1,27 @@
+Journey Curator AI — Phase 3 Persona Classifier Report
+=====================================================
+Data Source   : Synthetic preference dataset (heuristic rule-based labeling)
+Total Samples : 3000 rows
+Train / Test  : 2400 / 600 (80/20 split, stratified)
+Best Model    : RandomForestClassifier
+
+--- Performance Metrics ---
+- Accuracy             : 0.9783 (97.83%)
+- Weighted F1 Score    : 0.9782
+- 5-Fold CV Mean F1    : 0.9754 ± 0.0051
+
+--- Candidate Comparison (F1 Score) ---
+- RandomForestClassifier : 0.9782 (★ BEST)
+- LogisticRegression     : 0.9582
+
+--- Persona Class Distribution (3,000 samples) ---
+  - Culture & Food Explorer  : 776 samples (25.9%)
+  - Adventurer               : 672 samples (22.4%)
+  - Relaxed Vacationer       : 593 samples (19.8%)
+  - Luxury Wellness Seeker   : 485 samples (16.2%)
+  - Budget Backpacker        : 474 samples (15.8%)
+
+--- Note on Methodology ---
+As documented in README.md, labeled real-user persona datasets are unavailable.
+A 3,000-sample dataset was constructed with 6 preference features (1-5 scale)
+and labels derived via domain-engineered heuristic scoring with a 4% random noise mask.
