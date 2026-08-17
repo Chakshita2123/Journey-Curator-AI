@@ -153,6 +153,77 @@ export function MotionDiv({
   );
 }
 
+export function MotionImg({
+  initial,
+  animate,
+  whileInView,
+  whileHover,
+  transition = { duration: 0.4, delay: 0 },
+  viewport,
+  className = "",
+  style = {},
+  src,
+  alt,
+  ...props
+}: MotionProps & React.ImgHTMLAttributes<HTMLImageElement>) {
+  const ref = useRef<HTMLImageElement>(null);
+  const [isInView, setIsInView] = useState(!whileInView);
+
+  useEffect(() => {
+    if (!whileInView || !ref.current || typeof window === "undefined") return;
+    const observer = new IntersectionObserver(
+      ([entry]) => {
+        if (entry.isIntersecting) {
+          setIsInView(true);
+          if (viewport?.once) observer.disconnect();
+        } else if (!viewport?.once) {
+          setIsInView(false);
+        }
+      },
+      { threshold: viewport?.amount ?? 0.15 }
+    );
+    observer.observe(ref.current);
+    return () => observer.disconnect();
+  }, [whileInView, viewport]);
+
+  let currentTransform = "";
+  let currentOpacity = 1;
+
+  if (initial && typeof initial === "object") {
+    if (initial.opacity !== undefined) currentOpacity = initial.opacity;
+    if (initial.y !== undefined) currentTransform += `translateY(${initial.y}px) `;
+    if (initial.scale !== undefined) currentTransform += `scale(${initial.scale}) `;
+  }
+
+  if (animate) {
+    if (animate.opacity !== undefined) currentOpacity = animate.opacity;
+    if (animate.y !== undefined) currentTransform = `translateY(${animate.y}px) `;
+    if (animate.scale !== undefined) currentTransform += `scale(${animate.scale}) `;
+  }
+
+  const duration = transition?.duration ?? 0.4;
+  const delay = transition?.delay ?? 0;
+
+  const combinedStyle: React.CSSProperties = {
+    ...style,
+    opacity: currentOpacity,
+    transform: currentTransform.trim() || undefined,
+    transition: `opacity ${duration}s ease ${delay}s, transform ${duration}s ease ${delay}s`,
+    willChange: "transform, opacity",
+  };
+
+  return (
+    <img
+      ref={ref}
+      src={src}
+      alt={alt}
+      className={className}
+      style={combinedStyle}
+      {...props}
+    />
+  );
+}
+
 export const motion = {
   div: MotionDiv,
   section: MotionDiv,
@@ -170,6 +241,7 @@ export const motion = {
   li: MotionDiv,
   form: MotionDiv,
   main: MotionDiv,
+  img: MotionImg,
 };
 
 export function AnimatePresence({ children }: { children: React.ReactNode }) {

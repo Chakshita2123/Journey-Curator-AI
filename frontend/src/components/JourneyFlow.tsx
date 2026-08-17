@@ -6,16 +6,15 @@ import { useUserJourney } from "@/context/UserJourneyContext";
 import { motion, TiltCard } from "@/components/motion";
 
 export const STEPS_DATA = [
-  { step: 1, title: "Travel Persona", icon: User, href: "/persona", emoji: "🧠", desc: "Discover your travel style & preferences" },
-  { step: 2, title: "Cost Predictor", icon: Wallet, href: "/predict", emoji: "💰", desc: "Predict total trip cost with XGBoost ML" },
-  { step: 3, title: "Discover Spots", icon: Compass, href: "/discover", emoji: "🌏", desc: "Explore 13,000+ AI-ranked destinations" },
-  { step: 4, title: "AI Itinerary", icon: Map, href: "/itinerary", emoji: "🗺️", desc: "Generate custom day-by-day itineraries" },
+  { step: 1, title: "Discover Spots", icon: Compass, href: "/discover", emoji: "🌏", desc: "Explore AI-ranked destinations in India" },
+  { step: 2, title: "AI Itinerary", icon: Map, href: "/itinerary", emoji: "🗺️", desc: "Generate pre-filled day-by-day plans" },
+  { step: 3, title: "Cost Predictor", icon: Wallet, href: "/predict", emoji: "💰", desc: "Predict total trip cost & check budget" },
 ];
 
 /**
  * Top Breadcrumb Progress Stepper for Tool Pages
  */
-export function JourneyBreadcrumb({ currentStep }: { currentStep: 1 | 2 | 3 | 4 }) {
+export function JourneyBreadcrumb({ currentStep }: { currentStep: 1 | 2 | 3 }) {
   const { journey } = useUserJourney();
 
   return (
@@ -24,29 +23,29 @@ export function JourneyBreadcrumb({ currentStep }: { currentStep: 1 | 2 | 3 | 4 
       <div className="flex flex-col sm:flex-row items-center justify-between gap-3 mb-4 pb-3 border-b border-[var(--color-border)]">
         <div className="flex items-center gap-2 text-xs font-bold uppercase tracking-widest text-[var(--color-muted)]">
           <span className="px-2.5 py-0.5 rounded-full bg-[var(--color-coral-light)] text-[var(--color-coral)]">
-            Step {currentStep} of 4
+            Step {currentStep} of 3
           </span>
           <span>· Connected Travel Journey</span>
         </div>
 
         {/* Saved Session Info Badges */}
         <div className="flex items-center gap-2 text-xs flex-wrap justify-center">
-          {journey.persona && (
-            <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-[#FFF0EB] text-[#E05A36] font-bold border border-[#FF9776]/30 shadow-xs">
-              🎭 {journey.persona.persona}
+          {journey.selectedDestination && (
+            <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-[#EEECFC] text-[#6C5CE7] font-bold border border-[#6C5CE7]/20 shadow-xs">
+              📍 {journey.selectedDestination}
             </span>
           )}
           {journey.tripCost && (
             <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-[var(--color-teal-light)] text-[var(--color-teal-dark)] font-bold border border-[var(--color-teal)]/20 shadow-xs">
-              💰 ${journey.tripCost.predicted_cost.toLocaleString()}
+              💰 ₹{journey.tripCost.predicted_cost.toLocaleString("en-IN")}
             </span>
           )}
         </div>
       </div>
 
       {/* Visual Connecting Stepper Line */}
-      <div className="grid grid-cols-4 gap-2 relative">
-        {STEPS_DATA.map(({ step, title, href, icon: Icon }) => {
+      <div className="grid grid-cols-3 gap-3 relative max-w-2xl mx-auto">
+        {STEPS_DATA.map(({ step, title, href }) => {
           const isDone = step < currentStep;
           const isActive = step === currentStep;
 
@@ -85,39 +84,34 @@ export function JourneyBreadcrumb({ currentStep }: { currentStep: 1 | 2 | 3 | 4 
 /**
  * Bottom Next Step CTA for Tool Pages
  */
-export function JourneyNextStep({ currentStep }: { currentStep: 1 | 2 | 3 | 4 }) {
+export function JourneyNextStep({ currentStep }: { currentStep: 1 | 2 | 3 }) {
   const { journey } = useUserJourney();
 
   const nextStepData = {
     1: {
       stepNum: 2,
-      title: "Step 2: Predict Your Trip Cost 💰",
-      desc: journey.persona
-        ? `Use your ${journey.persona.persona} persona to calculate exact global trip costs & savings.`
-        : "Get an instant XGBoost ML cost estimation for your next destination.",
-      href: "/predict",
-      btnText: "Continue to Cost Predictor",
+      title: "Step 2: Generate Day-by-Day Itinerary 🗺️",
+      desc: journey.selectedDestination
+        ? `Generate a full AI itinerary for your selected destination: ${journey.selectedDestination}.`
+        : "Generate a custom day-by-day itinerary with daily routes & weather notes.",
+      href: "/itinerary",
+      btnText: journey.selectedDestination ? `Generate Itinerary for ${journey.selectedDestination}` : "Continue to AI Itinerary",
     },
     2: {
       stepNum: 3,
-      title: "Step 3: Discover Destination Spots 🌏",
-      desc: "Explore 13,000+ attractions curated by AI to match your travel style & budget.",
-      href: "/discover",
-      btnText: "Explore Top Destinations",
+      title: "Step 3: Predict & Optimize Trip Cost 💰",
+      desc: journey.selectedDestination
+        ? `Calculate total estimated cost and check budget for your trip to ${journey.selectedDestination}.`
+        : "Predict trip cost with XGBoost ML model and get budget optimization tips.",
+      href: "/predict",
+      btnText: "Continue to Cost Predictor (Pre-filled)",
     },
     3: {
-      stepNum: 4,
-      title: "Step 4: Generate Day-by-Day Itinerary 🗺️",
-      desc: "Craft a full AI itinerary with restaurant picks, daily routes, and weather tips.",
-      href: "/itinerary",
-      btnText: "Generate My Itinerary",
-    },
-    4: {
       stepNum: 1,
       title: "Journey Complete! Plan Another Trip 🎉",
-      desc: "Retake the quiz with a different vibe or explore custom route costs.",
-      href: "/persona",
-      btnText: "Retake Persona Quiz",
+      desc: "Explore more top destinations or create another custom travel itinerary.",
+      href: "/discover",
+      btnText: "Explore More Destinations",
     },
   }[currentStep];
 
@@ -163,7 +157,7 @@ export function JourneyNextStep({ currentStep }: { currentStep: 1 | 2 | 3 | 4 })
 }
 
 /**
- * Homepage visual 4-Step Journey Map Section
+ * Homepage visual 3-Step Journey Map Section
  */
 export function JourneyMap() {
   return (
@@ -176,18 +170,18 @@ export function JourneyMap() {
         className="text-center mb-14"
       >
         <span className="inline-block text-xs font-bold tracking-widest uppercase px-3.5 py-1 rounded-full bg-[#FFF0EB] text-[#E05A36] mb-3 border border-[#FF9776]/30">
-          Guided 4-Step Travel Blueprint
+          Guided 3-Step Travel Blueprint
         </span>
         <h2 className="font-heading font-800 text-3xl md:text-4xl text-[var(--color-text)] mb-3">
           Your Connected <span className="coral-text">Travel Journey</span>
         </h2>
         <p className="text-[var(--color-muted)] max-w-lg mx-auto font-medium">
-          Follow 4 simple steps to unlock complete travel clarity — from persona matching to full day-by-day plans.
+          Follow 3 simple steps for complete trip clarity — from destination discovery to day-by-day itineraries and ML cost predictions.
         </p>
       </motion.div>
 
-      {/* 4 Steps Grid with Connecting Line */}
-      <div className="grid md:grid-cols-4 gap-6 relative">
+      {/* 3 Steps Grid with Connecting Line */}
+      <div className="grid md:grid-cols-3 gap-6 relative">
         {STEPS_DATA.map(({ step, title, href, emoji, desc }, index) => (
           <motion.div
             key={step}

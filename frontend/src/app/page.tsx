@@ -4,11 +4,40 @@ import { useState, useEffect } from "react";
 import Link from "next/link";
 import Navbar from "@/components/Navbar";
 import FeatureCards from "@/components/FeatureCards";
-import { Sparkles, ArrowRight, Globe, Plane, Compass, MapPin, TrendingDown } from "lucide-react";
+import { Sparkles, ArrowRight, Globe, Plane, Compass, MapPin, TrendingDown, X } from "lucide-react";
 import { motion, TiltCard, CursorGlow, CountUpNumber, MagneticCard } from "@/components/motion";
 import dynamic from "next/dynamic";
 import { JourneyMap } from "@/components/JourneyFlow";
 import Hero3DScene from "@/components/Hero3DScene";
+import { useSession } from "next-auth/react";
+
+function GuestNudgeBanner() {
+  const [dismissed, setDismissed] = useState(false);
+  const { data: session } = useSession();
+
+  if (session || dismissed) return null;
+
+  return (
+    <div className="pt-20 px-6 max-w-6xl mx-auto">
+      <div className="bg-gradient-to-r from-teal-500/10 via-indigo-500/10 to-coral-500/10 border border-[var(--color-border-mid)] px-4 py-2.5 rounded-2xl text-xs sm:text-sm font-medium text-[var(--color-text)] flex items-center justify-between gap-3 shadow-xs">
+        <div className="flex items-center gap-2">
+          <span className="text-base flex-shrink-0">💡</span>
+          <span>
+            <strong>Welcome traveler!</strong> Explore freely or sign in anytime to save your custom itineraries &amp; access them across devices.
+          </span>
+        </div>
+        <button
+          type="button"
+          onClick={() => setDismissed(true)}
+          className="p-1 rounded-lg text-[var(--color-muted)] hover:text-[var(--color-text)] hover:bg-black/5 transition-colors flex-shrink-0"
+          aria-label="Dismiss message"
+        >
+          <X className="w-4 h-4" />
+        </button>
+      </div>
+    </div>
+  );
+}
 
 const InteractiveDestinationMap = dynamic(
   () => import("@/components/InteractiveDestinationMap"),
@@ -61,6 +90,7 @@ export default function HomePage() {
     <>
       <CursorGlow />
       <Navbar />
+      <GuestNudgeBanner />
 
       <main className="relative overflow-hidden">
         {/* ── Multi-Layered Animated Gradient Mesh Background ── */}
@@ -150,20 +180,20 @@ export default function HomePage() {
             className="mt-10 flex flex-wrap gap-4 justify-center"
           >
             <Link
-              href="/predict"
-              id="hero-predict-btn"
+              href="/discover"
+              id="hero-start-journey-btn"
               className="flex items-center gap-2.5 px-8 py-4 rounded-2xl font-semibold text-white btn-3d-primary btn-shimmer text-base"
             >
               <Sparkles className="w-5 h-5 text-amber-300 animate-pulse" />
-              Predict My Trip Cost
+              Start 3-Step Journey Blueprint
               <ArrowRight className="w-4 h-4" />
             </Link>
             <Link
-              href="/discover"
-              id="hero-discover-btn"
+              href="/predict"
+              id="hero-predict-btn"
               className="flex items-center gap-2.5 px-8 py-4 rounded-2xl font-semibold btn-3d-secondary btn-shimmer text-base"
             >
-              🇮🇳 Explore India&apos;s Spots
+              💰 Predict Trip Cost
             </Link>
           </motion.div>
 
@@ -252,7 +282,7 @@ export default function HomePage() {
               Ready to plan your next adventure?
             </h2>
             <p className="text-[var(--color-muted)] mb-8 max-w-lg mx-auto font-medium">
-              Get an AI-powered cost estimate, custom itinerary, and persona match in under 60 seconds.
+              Get an AI-powered cost estimate and custom itinerary in under 60 seconds.
             </p>
             <Link
               href="/predict"

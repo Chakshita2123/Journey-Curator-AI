@@ -3,7 +3,7 @@
 import { useState } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
-import { ChevronRight, ChevronLeft, Loader2, Sparkles, RefreshCcw, ArrowRight, CheckCircle2, MapIcon } from "lucide-react";
+import { ChevronRight, ChevronLeft, Sparkles, RefreshCcw, ArrowRight, CheckCircle2, MapIcon } from "lucide-react";
 import type { PersonaRequest, PersonaResponse } from "@/types/api";
 import DestinationRecommendations from "./DestinationRecommendations";
 import { useUserJourney } from "@/context/UserJourneyContext";
@@ -173,9 +173,7 @@ export default function PersonaQuiz() {
         transition={{ duration: 0.45 }}
         className="w-full max-w-4xl mx-auto flex flex-col gap-6"
       >
-        {/* Main Result Card */}
         <div className="card overflow-hidden text-center relative shadow-coral border border-[var(--color-border)] bg-white">
-          {/* Persona Hero Photography Banner */}
           <div className="h-48 md:h-56 w-full relative overflow-hidden img-card-container indigo-duotone-overlay">
             <img
               src={PERSONA_PHOTOS[result.persona] ?? PERSONA_PHOTOS.Adventurer}
@@ -207,56 +205,54 @@ export default function PersonaQuiz() {
               <p className="text-[var(--color-text)]">{result.tip}</p>
             </div>
 
-          {/* Recommended Styles */}
-          <div className="text-left mb-6">
-            <p className="text-xs font-semibold text-[var(--color-muted)] uppercase tracking-wider mb-2">
-              Recommended Travel Styles
-            </p>
-            <div className="flex flex-wrap gap-2">
-              {result.recommended_styles.map((style) => (
-                <span
-                  key={style}
-                  className="px-3 py-1.5 rounded-xl text-xs font-semibold shadow-xs"
-                  style={{ background: "var(--color-teal-light)", color: "var(--color-teal-dark)" }}
-                >
-                  ✨ {style}
-                </span>
-              ))}
+            <div className="text-left mb-6">
+              <p className="text-xs font-semibold text-[var(--color-muted)] uppercase tracking-wider mb-2">
+                Recommended Travel Styles
+              </p>
+              <div className="flex flex-wrap gap-2">
+                {result.recommended_styles.map((style) => (
+                  <span
+                    key={style}
+                    className="px-3 py-1.5 rounded-xl text-xs font-semibold shadow-xs"
+                    style={{ background: "var(--color-teal-light)", color: "var(--color-teal-dark)" }}
+                  >
+                    ✨ {style}
+                  </span>
+                ))}
+              </div>
             </div>
-          </div>
 
-          {/* Persona Breakdown Bars */}
-          <div className="text-left border-t border-[var(--color-border)] pt-5">
-            <p className="text-xs font-semibold text-[var(--color-muted)] uppercase tracking-wider mb-3">
-              Persona Affinity Breakdown
-            </p>
-            <div className="space-y-3">
-              {Object.entries(result.persona_breakdown)
-                .sort((a, b) => b[1] - a[1])
-                .map(([pName, val]) => {
-                  const pct = Math.round(val * 100);
-                  const isTop = pName === result.persona;
-                  return (
-                    <div key={pName} className="space-y-1">
-                      <div className="flex justify-between text-xs font-medium">
-                        <span className={isTop ? "font-bold text-[var(--color-coral)]" : "text-[var(--color-muted)]"}>
-                          {pName} {isTop ? "★" : ""}
-                        </span>
-                        <span className="text-[var(--color-text)] font-semibold">{pct}%</span>
+            <div className="text-left border-t border-[var(--color-border)] pt-5">
+              <p className="text-xs font-semibold text-[var(--color-muted)] uppercase tracking-wider mb-3">
+                Persona Affinity Breakdown
+              </p>
+              <div className="space-y-3">
+                {Object.entries(result.persona_breakdown)
+                  .sort((a, b) => b[1] - a[1])
+                  .map(([pName, val]) => {
+                    const pct = Math.round(val * 100);
+                    const isTop = pName === result.persona;
+                    return (
+                      <div key={pName} className="space-y-1">
+                        <div className="flex justify-between text-xs font-medium">
+                          <span className={isTop ? "font-bold text-[var(--color-coral)]" : "text-[var(--color-muted)]"}>
+                            {pName} {isTop ? "★" : ""}
+                          </span>
+                          <span className="text-[var(--color-text)] font-semibold">{pct}%</span>
+                        </div>
+                        <AnimatedProgressBar
+                          progress={pct}
+                          className="h-2.5 rounded-full bg-[var(--color-bg)] border border-[var(--color-border-mid)] overflow-hidden"
+                          barClassName={`h-full rounded-full ${isTop ? "coral-gradient" : "teal-gradient"}`}
+                        />
                       </div>
-                      <AnimatedProgressBar
-                        progress={pct}
-                        className="h-2.5 rounded-full bg-[var(--color-bg)] border border-[var(--color-border-mid)] overflow-hidden"
-                        barClassName={`h-full rounded-full ${isTop ? "coral-gradient" : "teal-gradient"}`}
-                      />
-                    </div>
-                  );
-                })}
+                    );
+                  })}
+              </div>
             </div>
           </div>
         </div>
 
-        {/* CTA Buttons */}
         <div className="flex flex-col sm:flex-row gap-3">
           <button
             id="retake-quiz-btn"
@@ -283,17 +279,16 @@ export default function PersonaQuiz() {
           </button>
 
           <Link
-            href={`/predict?style=${encodeURIComponent(result.recommended_styles[0] ?? "")}`}
-            id="plan-trip-persona-btn"
-            className="flex-1 flex items-center justify-center gap-2 px-6 py-3.5 rounded-2xl text-sm font-semibold text-white btn-3d-primary"
+            href="/discover"
+            id="discover-destinations-persona-btn"
+            className="flex-1 flex items-center justify-center gap-2 px-6 py-3.5 rounded-2xl text-sm font-semibold text-white btn-3d-primary btn-shimmer"
           >
             <Sparkles className="w-4 h-4" />
-            Plan Trip as {result.persona}
+            Discover Destinations for {result.persona}
             <ArrowRight className="w-4 h-4" />
           </Link>
         </div>
 
-        {/* Destination Recommendations */}
         {showRecommendations && (
           <DestinationRecommendations persona={result.persona} />
         )}
@@ -305,7 +300,6 @@ export default function PersonaQuiz() {
 
   return (
     <div className="card p-8 max-w-xl w-full mx-auto">
-      {/* Progress header */}
       <div className="flex items-center justify-between mb-4">
         <span className="text-xs font-bold text-[var(--color-coral)] uppercase tracking-wider">
           Question {currentStep + 1} of {QUESTIONS.length}
@@ -313,12 +307,10 @@ export default function PersonaQuiz() {
         <span className="text-xl">{currentQ.emoji}</span>
       </div>
 
-      {/* Animated Progress Bar */}
       <div className="mb-8">
         <AnimatedProgressBar progress={progressPct} />
       </div>
 
-      {/* Question Content */}
       <motion.div
         key={currentStep}
         initial={{ opacity: 0, x: 16 }}
@@ -332,7 +324,6 @@ export default function PersonaQuiz() {
           {currentQ.subtitle}
         </p>
 
-        {/* Options List with micro-interaction scale bounce */}
         <div className="space-y-3">
           {currentQ.options.map((opt) => {
             const isSelected = selectedValue === opt.value;
@@ -367,14 +358,12 @@ export default function PersonaQuiz() {
         </div>
       </motion.div>
 
-      {/* Error display */}
       {error && (
         <div className="mt-4 p-3 rounded-xl text-sm" style={{ background: "var(--color-danger-light)", color: "var(--color-danger)" }}>
           ⚠️ {error}
         </div>
       )}
 
-      {/* Bottom Nav */}
       <div className="flex gap-3 mt-8">
         {currentStep > 0 && (
           <button

@@ -2,6 +2,7 @@
 export interface TripRequest {
   destination: string;
   duration: number;
+  origin?: string;
   accommodation_type?: string;
   transportation_type?: string;
   age?: number;
@@ -25,6 +26,10 @@ export interface PredictResponse {
   predicted_cost: number;
   budget?: number;
   suggestions: Suggestion[];
+  best_season?: string;
+  best_season_raw?: string;
+  origin?: string;
+  transport_note?: string;
 }
 
 // ── Request sent to FastAPI /predict-persona ─────────────────
@@ -68,7 +73,7 @@ export interface DestinationRecommendation {
 
 // ── Request to get recommendations ───────────────────────────
 export interface RecommendDestinationsRequest {
-  persona: string;
+  persona?: string;
   top_k?: number;
 }
 
@@ -85,6 +90,7 @@ export interface ItineraryDay {
   title: string;
   summary: string;
   attractions: string[];
+  hidden_gem?: string;
   restaurants: string[];
   route_suggestion: string;
   weather_note: string;

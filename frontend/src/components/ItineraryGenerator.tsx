@@ -1,142 +1,225 @@
 "use client";
 
-import { useEffect, useMemo, useState } from "react";
+import { useState } from "react";
 import {
-  CalendarDays,
-  Compass,
   MapPin,
   Sparkles,
   Loader2,
-  Users,
   DollarSign,
-  RefreshCcw,
   MessageSquare,
   AlertTriangle,
   CheckCircle2,
+  BookmarkCheck,
+  ChevronDown,
+  ChevronUp,
+  Compass,
+  Utensils,
+  SunMedium,
+  Navigation,
+  Backpack,
+  Lightbulb,
+  Gem,
 } from "lucide-react";
 import type {
   ItineraryDay,
   ItineraryRequest,
   ItineraryResponse,
   PredictResponse,
-  PersonaResponse,
-  RecommendDestinationsResponse,
   TripRequest,
 } from "@/types/api";
-import { motion, LoadingStateCard, TiltCard, ErrorStateCard } from "@/components/motion";
+import { motion, LoadingStateCard } from "@/components/motion";
 import { useUserJourney } from "@/context/UserJourneyContext";
-
-const PERSONA_OPTIONS = [
-  "Adventurer",
-  "Relaxed Vacationer",
-  "Culture & Food Explorer",
-  "Budget Backpacker",
-  "Luxury Wellness Seeker",
-];
+import { useSession } from "next-auth/react";
+import AuthModal from "@/components/AuthModal";
+import WeatherWidget from "@/components/WeatherWidget";
+import DestinationAutocomplete from "@/components/DestinationAutocomplete";
 
 const ACCOMMODATION_TYPES = ["Hotel", "Resort", "Airbnb", "Hostel", "Villa", "Guesthouse"];
 const TRANSPORT_TYPES = ["Flight", "Train", "Bus", "Car rental", "Ferry", "Cruise"];
 
-const INITIAL_PERSONA_SCORES = {
-  nature_vs_nightlife: 3,
-  budget_vs_luxury: 3,
-  activity_level: 3,
-  food_preference: 3,
-  travel_pace: 3,
-  cultural_depth: 3,
-};
+// Rotating color themes for days
+const DAY_THEMES = [
+  {
+    bg: "bg-teal-50/70 border-teal-200/80 hover:border-teal-300",
+    badge: "bg-teal-600 text-white shadow-xs",
+    accent: "text-teal-700",
+    gemBorder: "border-teal-300 bg-teal-100/50",
+  },
+  {
+    bg: "bg-indigo-50/70 border-indigo-200/80 hover:border-indigo-300",
+    badge: "bg-indigo-600 text-white shadow-xs",
+    accent: "text-indigo-700",
+    gemBorder: "border-indigo-300 bg-indigo-100/50",
+  },
+  {
+    bg: "bg-rose-50/70 border-rose-200/80 hover:border-rose-300",
+    badge: "bg-rose-600 text-white shadow-xs",
+    accent: "text-rose-700",
+    gemBorder: "border-rose-300 bg-rose-100/50",
+  },
+  {
+    bg: "bg-amber-50/70 border-amber-200/80 hover:border-amber-300",
+    badge: "bg-amber-600 text-white shadow-xs",
+    accent: "text-amber-700",
+    gemBorder: "border-amber-300 bg-amber-100/50",
+  },
+  {
+    bg: "bg-emerald-50/70 border-emerald-200/80 hover:border-emerald-300",
+    badge: "bg-emerald-600 text-white shadow-xs",
+    accent: "text-emerald-700",
+    gemBorder: "border-emerald-300 bg-emerald-100/50",
+  },
+];
 
-function ScoreSlider({ label, value, onChange }: { label: string; value: number; onChange: (value: number) => void }) {
-  return (
-    <div className="space-y-2">
-      <div className="flex items-center justify-between gap-4 text-sm font-medium text-[var(--color-text)]">
-        <span>{label}</span>
-        <span className="text-[var(--color-muted)]">{value}</span>
-      </div>
-      <input
-        type="range"
-        min={1}
-        max={5}
-        value={value}
-        onChange={(event) => onChange(Number(event.target.value))}
-        className="w-full accent-[var(--color-coral)]"
-      />
-    </div>
-  );
+function getDayEmoji(title: string, summary: string, attractions: string[]): string {
+  const text = `${title} ${summary} ${attractions.join(" ")}`.toLowerCase();
+  if (text.includes("temple") || text.includes("bihari") || text.includes("ghat") || text.includes("shrine") || text.includes("religious") || text.includes("mandir")) return "🛕";
+  if (text.includes("fort") || text.includes("palace") || text.includes("castle") || text.includes("tomb") || text.includes("mahal") || text.includes("museum")) return "🏰";
+  if (text.includes("beach") || text.includes("lake") || text.includes("waterfall") || text.includes("river") || text.includes("garden") || text.includes("nature") || text.includes("backwaters")) return "🌴";
+  if (text.includes("bazaar") || text.includes("market") || text.includes("shopping") || text.includes("mall") || text.includes("craft")) return "🛍️";
+  if (text.includes("arrival") || text.includes("flight") || text.includes("train") || text.includes("check-in") || text.includes("welcome")) return "✈️";
+  if (text.includes("departure") || text.includes("souvenir") || text.includes("pack") || text.includes("bye")) return "🛫";
+  return "📍";
 }
 
-function DayCard({ day }: { day: ItineraryDay }) {
+function DayCard({ day, isExpanded, onToggle }: { day: ItineraryDay; isExpanded: boolean; onToggle: () => void }) {
+  const theme = DAY_THEMES[(day.day - 1) % DAY_THEMES.length];
+  const emoji = getDayEmoji(day.title, day.summary, day.attractions);
+
   return (
-    <motion.article
-      whileInView={{ opacity: 1, y: 0 }}
-      initial={{ opacity: 0, y: 24 }}
-      viewport={{ once: true }}
-      transition={{ duration: 0.45 }}
-      whileHover={{ y: -3 }}
-      className="card p-6 space-y-4"
-    >
-      <div className="flex items-start gap-3">
-        <div className="w-12 h-12 rounded-3xl teal-gradient flex items-center justify-center text-white shadow-teal text-lg font-bold">
-          {day.day}
+    <div className={`rounded-2xl border ${theme.bg} transition-all duration-200 overflow-hidden shadow-xs`}>
+      {/* ── Collapsible Header (Always Visible) ── */}
+      <button
+        type="button"
+        onClick={onToggle}
+        className="w-full text-left p-4 sm:p-5 flex items-center justify-between gap-4 cursor-pointer select-none hover:opacity-90 transition-opacity"
+      >
+        <div className="flex items-center gap-3.5 min-w-0">
+          <span className="text-2xl flex-shrink-0">{emoji}</span>
+          <div className="min-w-0">
+            <div className="flex items-center gap-2 mb-0.5 flex-wrap">
+              <span className={`text-xs font-bold px-2.5 py-0.5 rounded-full ${theme.badge}`}>
+                Day {day.day}
+              </span>
+              <h3 className="font-heading font-700 text-base sm:text-lg text-[var(--color-text)] truncate">
+                {day.title}
+              </h3>
+            </div>
+            <p className="text-xs sm:text-sm text-[var(--color-muted)] truncate font-medium">
+              {day.summary}
+            </p>
+          </div>
         </div>
-        <div className="space-y-1">
-          <h3 className="font-heading text-xl text-[var(--color-text)]">{day.title}</h3>
-          <p className="text-sm text-[var(--color-muted)]">{day.summary}</p>
-        </div>
-      </div>
 
-      <div className="grid gap-4 md:grid-cols-2">
-        <div>
-          <p className="text-xs uppercase tracking-[0.2em] text-[var(--color-muted)] mb-2 font-semibold">Top attractions</p>
-          <ul className="list-disc list-inside text-sm text-[var(--color-text)] space-y-1">
-            {day.attractions.map((item, index) => (
-              <li key={`${day.day}-attraction-${index}`}>{item}</li>
-            ))}
-          </ul>
+        <div className="flex items-center gap-2 flex-shrink-0">
+          <span className="text-xs font-semibold text-[var(--color-muted)] hidden sm:inline">
+            {isExpanded ? "Collapse" : "Expand"}
+          </span>
+          <div className="w-8 h-8 rounded-full bg-white/80 border border-[var(--color-border)] flex items-center justify-center text-[var(--color-text)] shadow-xs">
+            {isExpanded ? <ChevronUp className="w-4 h-4" /> : <ChevronDown className="w-4 h-4" />}
+          </div>
         </div>
-        <div>
-          <p className="text-xs uppercase tracking-[0.2em] text-[var(--color-muted)] mb-2 font-semibold">Restaurant picks</p>
-          <ul className="list-disc list-inside text-sm text-[var(--color-text)] space-y-1">
-            {day.restaurants.map((item, index) => (
-              <li key={`${day.day}-restaurant-${index}`}>{item}</li>
-            ))}
-          </ul>
-        </div>
-      </div>
+      </button>
 
-      <div className="grid gap-3 sm:grid-cols-2">
-        <div className="rounded-3xl p-4 bg-[var(--color-surface-teal)]">
-          <p className="text-[var(--color-muted)] text-xs uppercase tracking-[0.2em] mb-2 font-semibold">Route</p>
-          <p className="text-sm text-[var(--color-text)]">{day.route_suggestion}</p>
-        </div>
-        <div className="rounded-3xl p-4 bg-[var(--color-surface-warm)]">
-          <p className="text-[var(--color-muted)] text-xs uppercase tracking-[0.2em] mb-2 font-semibold">Weather note</p>
-          <p className="text-sm text-[var(--color-text)]">{day.weather_note}</p>
-        </div>
-      </div>
+      {/* ── Expanded Content ── */}
+      {isExpanded && (
+        <div className="px-4 pb-5 sm:px-6 sm:pb-6 pt-1 space-y-4 border-t border-black/5 bg-white/60">
+          {/* Main 2-Column Grid: Attractions & Food */}
+          <div className="grid sm:grid-cols-2 gap-4 pt-2">
+            {/* Column 1: Main Attractions & Hidden Gem */}
+            <div className="space-y-3">
+              <div>
+                <p className="text-xs font-bold uppercase tracking-wider text-[var(--color-muted)] mb-2 flex items-center gap-1.5">
+                  <Compass className="w-3.5 h-3.5 text-[var(--color-teal-dark)]" />
+                  Top Attractions
+                </p>
+                <ul className="space-y-1.5 text-sm text-[var(--color-text)] font-medium">
+                  {day.attractions.map((item, idx) => (
+                    <li key={idx} className="flex items-start gap-2">
+                      <span className="text-[var(--color-coral)] mt-0.5">•</span>
+                      <span>{item}</span>
+                    </li>
+                  ))}
+                </ul>
+              </div>
 
-      <div className="rounded-3xl p-4 bg-[var(--color-bg)] border border-[var(--color-border)]">
-        <p className="text-[var(--color-muted)] text-xs uppercase tracking-[0.2em] mb-2 font-semibold">Packing checklist</p>
-        <ul className="list-disc list-inside text-sm text-[var(--color-text)] space-y-1">
-          {day.packing.map((item, index) => (
-            <li key={`${day.day}-pack-${index}`}>{item}</li>
-          ))}
-        </ul>
-      </div>
+              {/* 💎 HIDDEN GEM CALLOUT BADGE */}
+              {day.hidden_gem && (
+                <div className={`p-3 rounded-xl border ${theme.gemBorder} shadow-xs space-y-1`}>
+                  <div className="flex items-center gap-1.5 text-xs font-bold text-amber-700 dark:text-amber-300">
+                    <Gem className="w-3.5 h-3.5 text-amber-500 animate-pulse" />
+                    <span>💎 Hidden Gem</span>
+                  </div>
+                  <p className="text-xs font-semibold text-[var(--color-text)] leading-snug">
+                    {day.hidden_gem}
+                  </p>
+                </div>
+              )}
+            </div>
 
-      {day.notes && (
-        <div className="rounded-3xl p-4 bg-white border border-[var(--color-border)]">
-          <p className="text-xs uppercase tracking-[0.2em] text-[var(--color-muted)] mb-2 font-semibold">Pro tip</p>
-          <p className="text-sm text-[var(--color-text)]">{day.notes}</p>
+            {/* Column 2: Restaurant Picks */}
+            <div>
+              <p className="text-xs font-bold uppercase tracking-wider text-[var(--color-muted)] mb-2 flex items-center gap-1.5">
+                <Utensils className="w-3.5 h-3.5 text-[var(--color-coral)]" />
+                Restaurant &amp; Food Picks
+              </p>
+              <ul className="space-y-1.5 text-sm text-[var(--color-text)] font-medium">
+                {day.restaurants.map((item, idx) => (
+                  <li key={idx} className="flex items-start gap-2">
+                    <span className="text-[var(--color-teal)] mt-0.5">•</span>
+                    <span>{item}</span>
+                  </li>
+                ))}
+              </ul>
+            </div>
+          </div>
+
+          {/* Combined Trip Details Bar */}
+          <div className="rounded-xl bg-white border border-[var(--color-border-mid)] p-3.5 space-y-2 text-xs">
+            {/* Route & Weather row */}
+            <div className="grid sm:grid-cols-2 gap-3">
+              <div className="flex items-start gap-2 text-[var(--color-text)]">
+                <Navigation className="w-4 h-4 text-[var(--color-teal-dark)] flex-shrink-0 mt-0.5" />
+                <div>
+                  <span className="font-bold text-[var(--color-muted)] uppercase tracking-wider text-[10px] block">Route Suggestion</span>
+                  <span>{day.route_suggestion}</span>
+                </div>
+              </div>
+
+              <div className="flex items-start gap-2 text-[var(--color-text)]">
+                <SunMedium className="w-4 h-4 text-amber-500 flex-shrink-0 mt-0.5" />
+                <div>
+                  <span className="font-bold text-[var(--color-muted)] uppercase tracking-wider text-[10px] block">Weather Note</span>
+                  <span>{day.weather_note}</span>
+                </div>
+              </div>
+            </div>
+
+            {/* Packing & Note row */}
+            <div className="pt-2 border-t border-[var(--color-border)] grid sm:grid-cols-2 gap-3">
+              <div className="flex items-start gap-2 text-[var(--color-text)]">
+                <Backpack className="w-4 h-4 text-indigo-500 flex-shrink-0 mt-0.5" />
+                <div>
+                  <span className="font-bold text-[var(--color-muted)] uppercase tracking-wider text-[10px] block">Pack</span>
+                  <span>{day.packing.join(" · ")}</span>
+                </div>
+              </div>
+
+              {day.notes && (
+                <div className="flex items-start gap-2 text-[var(--color-text)]">
+                  <Lightbulb className="w-4 h-4 text-amber-500 flex-shrink-0 mt-0.5" />
+                  <div>
+                    <span className="font-bold text-[var(--color-muted)] uppercase tracking-wider text-[10px] block">Pro Tip</span>
+                    <span>{day.notes}</span>
+                  </div>
+                </div>
+              )}
+            </div>
+          </div>
         </div>
       )}
-    </motion.article>
+    </div>
   );
-}
-
-function formatDestinationList(recommendations: RecommendDestinationsResponse | null) {
-  if (!recommendations || recommendations.recommendations.length === 0) return "No destination recommendations available.";
-  return recommendations.recommendations.slice(0, 5).map((item) => `${item.place_name} (${item.city})`).join(" • ");
 }
 
 function mergeItinerary(existing: ItineraryDay[], update: ItineraryDay[]) {
@@ -146,7 +229,8 @@ function mergeItinerary(existing: ItineraryDay[], update: ItineraryDay[]) {
 }
 
 export default function ItineraryGenerator() {
-  const { journey } = useUserJourney();
+  const { journey, setTripInputs } = useUserJourney();
+  const { data: session } = useSession();
   const [destination, setDestination] = useState(journey.selectedDestination || "");
   const [duration, setDuration] = useState<number>(journey.duration || 5);
   const [startDate, setStartDate] = useState("");
@@ -154,11 +238,6 @@ export default function ItineraryGenerator() {
   const [budget, setBudget] = useState<number | "">(journey.budget || "");
   const [accommodation, setAccommodation] = useState(journey.accommodation || "");
   const [transport, setTransport] = useState(journey.transport || "");
-  const [personaOverride, setPersonaOverride] = useState(journey.persona?.persona || PERSONA_OPTIONS[0]);
-  const [usePersonaQuiz, setUsePersonaQuiz] = useState(!journey.persona);
-  const [personaScores, setPersonaScores] = useState(INITIAL_PERSONA_SCORES);
-  const [predictedPersona, setPredictedPersona] = useState<PersonaResponse | null>(journey.persona);
-  const [recommendations, setRecommendations] = useState<RecommendDestinationsResponse | null>(null);
   const [costPrediction, setCostPrediction] = useState<PredictResponse | null>(journey.tripCost);
   const [itinerary, setItinerary] = useState<ItineraryDay[] | null>(null);
   const [loading, setLoading] = useState(false);
@@ -169,34 +248,29 @@ export default function ItineraryGenerator() {
   const [updatedDays, setUpdatedDays] = useState<number[] | null>(null);
   const [generatedBy, setGeneratedBy] = useState<"gemini" | "groq" | "mock" | null>(null);
 
-  const personaName = predictedPersona?.persona ?? personaOverride;
-  const personaTitle = predictedPersona?.title ?? "";
-  const personaDetails = predictedPersona?.description ?? "";
+  // Expanded days state: set Day 1 expanded by default
+  const [expandedDays, setExpandedDays] = useState<Record<number, boolean>>({ 1: true });
 
-  const recommendedText = useMemo(() => formatDestinationList(recommendations), [recommendations]);
+  // Save trip
+  const [saveStatus, setSaveStatus] = useState<"idle" | "saving" | "saved" | "error">("idle");
+  const [savedTripId, setSavedTripId] = useState<string | null>(null);
+  const [showAuthModal, setShowAuthModal] = useState(false);
+  const [saveError, setSaveError] = useState<string | null>(null);
 
-  useEffect(() => {
-    if (!predictedPersona) return;
-    const controller = new AbortController();
-    const loadRecommendations = async () => {
-      try {
-        const response = await fetch("/api/recommend-destinations", {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ persona: predictedPersona.persona, top_k: 6 }),
-          signal: controller.signal,
-        });
-        if (!response.ok) return;
-        const data = (await response.json()) as RecommendDestinationsResponse;
-        setRecommendations(data);
-      } catch {
-        // ignore silently when user changes persona quickly
-      }
-    };
+  function toggleDay(dayNum: number) {
+    setExpandedDays((prev) => ({ ...prev, [dayNum]: !prev[dayNum] }));
+  }
 
-    loadRecommendations();
-    return () => controller.abort();
-  }, [predictedPersona]);
+  function expandAll() {
+    if (!itinerary) return;
+    const all: Record<number, boolean> = {};
+    itinerary.forEach((d) => (all[d.day] = true));
+    setExpandedDays(all);
+  }
+
+  function collapseAll() {
+    setExpandedDays({});
+  }
 
   async function fetchCostPrediction(payload: TripRequest) {
     try {
@@ -208,24 +282,6 @@ export default function ItineraryGenerator() {
       if (!response.ok) return null;
       return (await response.json()) as PredictResponse;
     } catch {
-      return null;
-    }
-  }
-
-  async function fetchPersonaPrediction() {
-    try {
-      const response = await fetch("/api/predict-persona", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(personaScores),
-      });
-      if (!response.ok) {
-        const data = await response.json();
-        throw new Error(data.error ?? "Persona prediction failed");
-      }
-      return (await response.json()) as PersonaResponse;
-    } catch (err) {
-      if (err instanceof Error) setError(err.message);
       return null;
     }
   }
@@ -246,19 +302,10 @@ export default function ItineraryGenerator() {
         budget: typeof budget === "number" ? budget : undefined,
         group_size: groupSize,
       };
-      const [costResult, personaResult] = await Promise.all([
-        fetchCostPrediction(costPayload),
-        usePersonaQuiz ? fetchPersonaPrediction() : Promise.resolve(null),
-      ]);
+      const costResult = await fetchCostPrediction(costPayload);
 
       if (costResult) {
         setCostPrediction(costResult);
-      } else {
-        setInfo("Cost prediction is not available right now. Continuing with itinerary generation.");
-      }
-
-      if (personaResult) {
-        setPredictedPersona(personaResult);
       }
 
       const payload: ItineraryRequest = {
@@ -270,10 +317,6 @@ export default function ItineraryGenerator() {
         budget: typeof budget === "number" ? budget : undefined,
         accommodation_type: accommodation || undefined,
         transportation_type: transport || undefined,
-        persona: personaResult?.persona ?? personaOverride,
-        persona_title: personaResult?.title,
-        persona_description: personaResult?.description,
-        recommended_destinations: recommendedText,
         cost_summary: costResult
           ? `Predicted cost ₹${costResult.predicted_cost.toLocaleString()} with ${costResult.suggestions.length} optimization suggestions.`
           : undefined,
@@ -294,14 +337,70 @@ export default function ItineraryGenerator() {
       setItinerary(data.itinerary);
       setGeneratedBy(data.generated_by ?? null);
       setUpdatedDays(data.partial_update ? data.itinerary.map((item) => item.day) : null);
+
+      // Expand Day 1 by default
+      const defaultExpanded: Record<number, boolean> = { 1: true };
+      setExpandedDays(defaultExpanded);
+
+      // Carry trip details forward to Step 3
+      setTripInputs({
+        selectedDestination: destination,
+        duration,
+        accommodation,
+        transport,
+        groupSize,
+        budget: typeof budget === "number" ? budget : "",
+      });
+
+      // ONLY show info banner if generated_by is genuinely "mock"
       if (data.generated_by === "mock") {
         setInfo("Fallback mock itinerary used because Gemini and Groq were unavailable or returned invalid output.");
+      } else {
+        setInfo(null);
       }
     } catch (err) {
       const message = err instanceof Error ? err.message : "Unknown error while generating itinerary.";
       setError(message);
     } finally {
       setLoading(false);
+    }
+    setSaveStatus("idle");
+    setSavedTripId(null);
+    setSaveError(null);
+  }
+
+  // Save trip handler
+  async function handleSaveTrip() {
+    if (!session) {
+      setShowAuthModal(true);
+      return;
+    }
+    if (!itinerary) return;
+    setSaveStatus("saving");
+    setSaveError(null);
+    try {
+      const res = await fetch("/api/trips", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          destination,
+          startDate: startDate || null,
+          endDate: startDate
+            ? new Date(new Date(startDate).getTime() + (duration - 1) * 86400000).toISOString().slice(0, 10)
+            : null,
+          duration,
+          groupSize,
+          costPrediction: costPrediction ?? null,
+          itinerary,
+        }),
+      });
+      const data = await res.json();
+      if (!res.ok) throw new Error(data.error ?? "Failed to save trip.");
+      setSaveStatus("saved");
+      setSavedTripId(data.tripId ?? null);
+    } catch (err) {
+      setSaveStatus("error");
+      setSaveError(err instanceof Error ? err.message : "Could not save trip.");
     }
   }
 
@@ -320,10 +419,6 @@ export default function ItineraryGenerator() {
         budget: typeof budget === "number" ? budget : undefined,
         accommodation_type: accommodation || undefined,
         transportation_type: transport || undefined,
-        persona: personaName,
-        persona_title: personaTitle,
-        persona_description: personaDetails,
-        recommended_destinations: recommendedText,
         cost_summary: costPrediction
           ? `Predicted cost ₹${costPrediction.predicted_cost.toLocaleString()} with ${costPrediction.suggestions.length} suggestions.`
           : undefined,
@@ -346,10 +441,11 @@ export default function ItineraryGenerator() {
       setGeneratedBy(data.generated_by ?? generatedBy);
       setUpdatedDays(data.itinerary.map((item) => item.day));
       setFollowup("");
+
       if (data.generated_by === "mock") {
         setInfo("Fallback mock itinerary used for the follow-up because Gemini and Groq were unavailable.");
       } else {
-        setInfo("Your follow-up update has been merged into the existing itinerary.");
+        setInfo(null);
       }
     } catch (err) {
       const message = err instanceof Error ? err.message : "Unknown error while updating itinerary.";
@@ -360,353 +456,332 @@ export default function ItineraryGenerator() {
   }
 
   return (
-    <div className="grid gap-8 lg:grid-cols-[0.95fr_0.9fr]">
-      <section className="space-y-6">
-        <div className="card p-8">
-          <div className="flex flex-col gap-4">
-            <div className="flex items-start gap-4">
-              <div className="w-12 h-12 rounded-3xl coral-gradient flex items-center justify-center text-white shadow-coral text-2xl">
-                <MapPin />
-              </div>
-              <div>
-                <p className="text-sm font-semibold uppercase tracking-[0.24em] text-[var(--color-muted)] mb-1">Phase 5</p>
-                <h2 className="font-heading text-3xl text-[var(--color-text)]">LLM-powered itinerary builder</h2>
-                <p className="text-sm text-[var(--color-muted)] max-w-2xl mt-2">
-                  Generate a full day-by-day travel plan using cost predictions, persona vibes, destination recommendations, and your raw trip details.
-                </p>
-              </div>
+    <>
+      {/* ── Main Container: Full Width Balanced Layout ── */}
+      <div className="max-w-4xl mx-auto space-y-8">
+
+        {/* ── Top Section: Trip Parameters Form Card ── */}
+        <div className="card p-6 sm:p-8 space-y-6">
+          <div className="flex items-start gap-4">
+            <div className="w-12 h-12 rounded-2xl coral-gradient flex items-center justify-center text-white shadow-coral text-2xl flex-shrink-0">
+              <MapPin />
             </div>
-
-            <div className="grid gap-4 sm:grid-cols-2">
-              <label className="space-y-2 text-sm font-medium text-[var(--color-text)]">
-                Destination
-                <input
-                  value={destination}
-                  onChange={(event) => setDestination(event.target.value)}
-                  placeholder="Goa, Kyoto, New York…"
-                  className="input-base"
-                />
-              </label>
-              <label className="space-y-2 text-sm font-medium text-[var(--color-text)]">
-                Start date
-                <input
-                  type="date"
-                  value={startDate}
-                  onChange={(event) => setStartDate(event.target.value)}
-                  className="input-base"
-                />
-              </label>
+            <div>
+              <p className="text-xs font-bold uppercase tracking-[0.2em] text-[var(--color-muted)] mb-1">AI Itinerary Builder</p>
+              <h2 className="font-heading text-2xl sm:text-3xl text-[var(--color-text)]">Create Your Custom Day-by-Day Plan</h2>
+              <p className="text-sm text-[var(--color-muted)] mt-1 font-medium">
+                Enter your trip preferences below. Generates specific attractions, hidden gems, food spots, and day-by-day routes.
+              </p>
             </div>
+          </div>
 
-            <div className="grid gap-4 sm:grid-cols-3">
-              <label className="space-y-2 text-sm font-medium text-[var(--color-text)]">
-                Duration (days)
-                <input
-                  type="number"
-                  min={1}
-                  max={21}
-                  value={duration}
-                  onChange={(event) => setDuration(Number(event.target.value))}
-                  className="input-base"
-                />
-              </label>
-              <label className="space-y-2 text-sm font-medium text-[var(--color-text)]">
-                Group size
-                <input
-                  type="number"
-                  min={1}
-                  max={20}
-                  value={groupSize}
-                  onChange={(event) => setGroupSize(Number(event.target.value))}
-                  className="input-base"
-                />
-              </label>
-              <label className="space-y-2 text-sm font-medium text-[var(--color-text)]">
-                Budget (₹)
-                <input
-                  type="number"
-                  min={0}
-                  value={budget}
-                  onChange={(event) => setBudget(event.target.value === "" ? "" : Number(event.target.value))}
-                  placeholder="Optional"
-                  className="input-base"
-                />
-              </label>
-            </div>
-
-            <div className="grid gap-4 sm:grid-cols-2">
-              <label className="space-y-2 text-sm font-medium text-[var(--color-text)]">
-                Accommodation style
-                <select
-                  value={accommodation}
-                  onChange={(event) => setAccommodation(event.target.value)}
-                  className="input-base"
-                >
-                  <option value="">Flexible</option>
-                  {ACCOMMODATION_TYPES.map((item) => (
-                    <option key={item} value={item}>{item}</option>
-                  ))}
-                </select>
-              </label>
-              <label className="space-y-2 text-sm font-medium text-[var(--color-text)]">
-                Transportation
-                <select
-                  value={transport}
-                  onChange={(event) => setTransport(event.target.value)}
-                  className="input-base"
-                >
-                  <option value="">Flexible</option>
-                  {TRANSPORT_TYPES.map((item) => (
-                    <option key={item} value={item}>{item}</option>
-                  ))}
-                </select>
-              </label>
-            </div>
-
-            <div className="flex flex-col gap-3 rounded-3xl border border-[var(--color-border)] bg-[var(--color-surface)] p-4">
-              <div className="flex items-center justify-between gap-3">
-                <div>
-                  <p className="text-sm font-semibold text-[var(--color-text)]">Travel persona</p>
-                  <p className="text-xs text-[var(--color-muted)]">Use a quick persona scorecard or pick a profile manually.</p>
-                </div>
-                <button
-                  type="button"
-                  onClick={() => setUsePersonaQuiz((state) => !state)}
-                  className="px-3 py-2 rounded-full text-sm font-semibold border border-[var(--color-border-mid)] hover:border-[var(--color-coral)] transition-colors"
-                >
-                  {usePersonaQuiz ? "Use manual selection" : "Use quiz scores"}
-                </button>
-              </div>
-
-              {usePersonaQuiz ? (
-                <div className="grid gap-4">
-                  <ScoreSlider
-                    label="Nature vs nightlife"
-                    value={personaScores.nature_vs_nightlife}
-                    onChange={(value) => setPersonaScores((prev) => ({ ...prev, nature_vs_nightlife: value }))}
-                  />
-                  <ScoreSlider
-                    label="Budget vs luxury"
-                    value={personaScores.budget_vs_luxury}
-                    onChange={(value) => setPersonaScores((prev) => ({ ...prev, budget_vs_luxury: value }))}
-                  />
-                  <ScoreSlider
-                    label="Activity level"
-                    value={personaScores.activity_level}
-                    onChange={(value) => setPersonaScores((prev) => ({ ...prev, activity_level: value }))}
-                  />
-                  <ScoreSlider
-                    label="Food preference"
-                    value={personaScores.food_preference}
-                    onChange={(value) => setPersonaScores((prev) => ({ ...prev, food_preference: value }))}
-                  />
-                  <ScoreSlider
-                    label="Travel pace"
-                    value={personaScores.travel_pace}
-                    onChange={(value) => setPersonaScores((prev) => ({ ...prev, travel_pace: value }))}
-                  />
-                  <ScoreSlider
-                    label="Cultural depth"
-                    value={personaScores.cultural_depth}
-                    onChange={(value) => setPersonaScores((prev) => ({ ...prev, cultural_depth: value }))}
-                  />
-                </div>
-              ) : (
-                <label className="space-y-2 text-sm font-medium text-[var(--color-text)]">
-                  Select persona
-                  <select
-                    value={personaOverride}
-                    onChange={(event) => setPersonaOverride(event.target.value)}
-                    className="input-base"
-                  >
-                    {PERSONA_OPTIONS.map((option) => (
-                      <option key={option} value={option}>{option}</option>
-                    ))}
-                  </select>
-                </label>
-              )}
-            </div>
-
-            {error && (
-              <ErrorStateCard
-                title="Itinerary Generation Error"
-                message={error}
-                onRetry={handleGenerate}
+          <div className="grid gap-4 sm:grid-cols-2">
+            <label className="space-y-1.5 text-sm font-semibold text-[var(--color-text)]">
+              Destination *
+              <DestinationAutocomplete
+                id="itinerary-destination"
+                value={destination}
+                onChange={setDestination}
+                placeholder="Vrindavan, Jaipur, Goa, Manali..."
+                showIcon={false}
+                size="md"
               />
-            )}
+            </label>
+            <label className="space-y-1.5 text-sm font-semibold text-[var(--color-text)]">
+              Start Date
+              <input
+                type="date"
+                value={startDate}
+                onChange={(event) => setStartDate(event.target.value)}
+                className="input-base font-medium"
+              />
+            </label>
+          </div>
 
-            {info && (
-              <div className="rounded-3xl border border-[var(--color-teal-light)] bg-[var(--color-teal-light)] p-4 text-sm text-[var(--color-teal-dark)]">
-                {info}
-              </div>
-            )}
+          <div className="grid gap-4 grid-cols-2 sm:grid-cols-4">
+            <label className="space-y-1.5 text-sm font-semibold text-[var(--color-text)]">
+              Duration (days)
+              <input
+                type="number"
+                min={1}
+                max={21}
+                value={duration}
+                onChange={(event) => setDuration(Number(event.target.value))}
+                className="input-base font-medium"
+              />
+            </label>
+            <label className="space-y-1.5 text-sm font-semibold text-[var(--color-text)]">
+              Group Size
+              <input
+                type="number"
+                min={1}
+                max={20}
+                value={groupSize}
+                onChange={(event) => setGroupSize(Number(event.target.value))}
+                className="input-base font-medium"
+              />
+            </label>
+            <label className="space-y-1.5 text-sm font-semibold text-[var(--color-text)]">
+              Budget (₹)
+              <input
+                type="number"
+                min={0}
+                value={budget}
+                onChange={(event) => setBudget(event.target.value === "" ? "" : Number(event.target.value))}
+                placeholder="Optional"
+                className="input-base font-medium"
+              />
+            </label>
+            <label className="space-y-1.5 text-sm font-semibold text-[var(--color-text)]">
+              Stay Type
+              <select
+                value={accommodation}
+                onChange={(e) => setAccommodation(e.target.value)}
+                className="input-base font-medium"
+              >
+                <option value="">Flexible</option>
+                {ACCOMMODATION_TYPES.map((a) => (
+                  <option key={a} value={a}>{a}</option>
+                ))}
+              </select>
+            </label>
+          </div>
 
-            <div className="flex flex-col gap-3 sm:flex-row items-stretch sm:items-center">
-              <button
-                type="button"
-                disabled={!canGenerate || loading}
-                onClick={handleGenerate}
-                className="flex-1 px-5 py-3 rounded-3xl text-sm font-semibold text-white btn-3d-primary disabled:cursor-not-allowed disabled:opacity-60"
-              >
-                {loading ? (
-                  <span className="inline-flex items-center gap-2"><Loader2 className="w-4 h-4 animate-spin" /> Generating itinerary…</span>
-                ) : (
-                  <span className="inline-flex items-center gap-2"><Sparkles className="w-4 h-4" /> Generate itinerary</span>
-                )}
-              </button>
-              <button
-                type="button"
-                onClick={() => {
-                  setDestination("");
-                  setDuration(5);
-                  setStartDate("");
-                  setGroupSize(2);
-                  setBudget("");
-                  setAccommodation("");
-                  setTransport("");
-                  setPersonaOverride(PERSONA_OPTIONS[0]);
-                  setPersonaScores(INITIAL_PERSONA_SCORES);
-                  setPredictedPersona(null);
-                  setRecommendations(null);
-                  setCostPrediction(null);
-                  setItinerary(null);
-                  setError(null);
-                  setInfo(null);
-                  setUpdatedDays(null);
-                }}
-                className="flex-1 px-5 py-3 rounded-3xl text-sm font-semibold btn-3d-secondary"
-              >
-                Reset form
-              </button>
-            </div>
+          {/* CTA Row */}
+          <div className="pt-2 flex items-center justify-between flex-wrap gap-4 border-t border-[var(--color-border)]">
+            <button
+              id="generate-itinerary-btn"
+              type="button"
+              disabled={!canGenerate || loading}
+              onClick={handleGenerate}
+              className="inline-flex items-center gap-2 px-7 py-3.5 rounded-2xl text-sm font-bold text-white btn-3d-primary btn-shimmer disabled:opacity-60 disabled:cursor-not-allowed"
+            >
+              {loading ? <Loader2 className="w-5 h-5 animate-spin" /> : <Sparkles className="w-5 h-5" />}
+              Generate Custom AI Itinerary →
+            </button>
+
+            <button
+              type="button"
+              onClick={() => {
+                setDestination("");
+                setDuration(5);
+                setStartDate("");
+                setGroupSize(2);
+                setBudget("");
+                setAccommodation("");
+                setTransport("");
+                setItinerary(null);
+                setCostPrediction(null);
+                setInfo(null);
+                setError(null);
+              }}
+              className="text-xs font-semibold text-[var(--color-muted)] hover:text-[var(--color-text)] transition-colors"
+            >
+              Reset Form
+            </button>
           </div>
         </div>
 
-        <div className="grid gap-4 xl:grid-cols-[0.9fr_0.9fr]">
-          <div className="card p-6">
-            <div className="flex items-center gap-3 mb-4 text-sm font-semibold text-[var(--color-text)]">
-              <Compass className="w-5 h-5 text-[var(--color-coral)]" />
-              <span>Persona & recommendations</span>
-            </div>
-            <div className="space-y-3 text-sm text-[var(--color-text)]">
-              <p><span className="font-semibold">Persona:</span> {personaName}</p>
-              {personaTitle && <p><span className="font-semibold">Profile:</span> {personaTitle}</p>}
-              {personaDetails && <p className="text-[var(--color-muted)]">{personaDetails}</p>}
-              <p><span className="font-semibold">Top destinations:</span></p>
-              <p className="text-[var(--color-muted)]">{recommendedText}</p>
+        {/* ── Weather Widget (If Destination Entered) ── */}
+        {destination.trim().length >= 2 && (
+          <WeatherWidget destination={destination} startDate={startDate || undefined} />
+        )}
+
+        {/* ── Info / Warning Banners ── */}
+        {info && generatedBy === "mock" && (
+          <div className="rounded-2xl border border-amber-300 bg-amber-50 dark:bg-amber-950/30 p-4 text-xs sm:text-sm text-amber-800 dark:text-amber-200 flex items-start gap-3 shadow-xs">
+            <AlertTriangle className="w-5 h-5 flex-shrink-0 text-amber-600 mt-0.5" />
+            <div>
+              <span className="font-bold block">Notice</span>
+              <span>{info}</span>
             </div>
           </div>
+        )}
 
-          <div className="card p-6">
-            <div className="flex items-center gap-3 mb-4 text-sm font-semibold text-[var(--color-text)]">
-              <DollarSign className="w-5 h-5 text-[var(--color-teal)]" />
-              <span>Budget input</span>
-            </div>
-            <div className="space-y-3 text-sm text-[var(--color-text)]">
-              {costPrediction ? (
-                <>
-                  <p><span className="font-semibold">Predicted cost:</span> ₹{costPrediction.predicted_cost.toLocaleString()}</p>
-                  <p><span className="font-semibold">Suggestions:</span></p>
-                  <ul className="list-disc list-inside text-[var(--color-muted)] space-y-1">
-                    {costPrediction.suggestions.map((suggestion, index) => (
-                      <li key={`suggestion-${index}`}>
-                        {suggestion.field}: change {suggestion.original_value} → {suggestion.suggested_value}
-                      </li>
-                    ))}
-                  </ul>
-                </>
-              ) : (
-                <p className="text-[var(--color-muted)]">Generate an itinerary to see cost prediction and optimisation notes embedded in the prompt.</p>
-              )}
+        {error && (
+          <div className="rounded-2xl border border-rose-300 bg-rose-50 dark:bg-rose-950/30 p-4 text-sm text-rose-800 dark:text-rose-200 flex items-start gap-3">
+            <AlertTriangle className="w-5 h-5 flex-shrink-0 text-rose-600 mt-0.5" />
+            <div>
+              <span className="font-bold block">Error</span>
+              <span>{error}</span>
             </div>
           </div>
-        </div>
-      </section>
+        )}
 
-      <section className="space-y-6">
+        {/* ── Main Generated Itinerary Display Section ── */}
         {loading ? (
-          <LoadingStateCard message="Crafting AI Day-by-Day Itinerary..." />
+          <LoadingStateCard message={`Crafting AI Day-by-Day Itinerary for ${destination || "your trip"}...`} />
         ) : itinerary ? (
           <div className="space-y-6">
-            <div className="card p-6">
-              <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
-                <div>
-                  <p className="text-sm uppercase tracking-[0.24em] text-[var(--color-muted)]">Your itinerary</p>
-                  <h3 className="font-heading text-2xl text-[var(--color-text)]">{destination || "Traveler"} · {duration} days</h3>
+
+            {/* Header Toolbar */}
+            <div className="card p-6 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
+              <div>
+                <div className="flex items-center gap-2 mb-1 flex-wrap">
+                  <span className="text-xs font-bold uppercase tracking-[0.2em] text-[var(--color-muted)]">Verified Plan</span>
+                  {generatedBy && (
+                    <span className={`text-[10px] font-bold px-2.5 py-0.5 rounded-full ${
+                      generatedBy === "mock" ? "bg-amber-100 text-amber-800" : "bg-emerald-100 text-emerald-800"
+                    }`}>
+                      Generated via {generatedBy.toUpperCase()} LLM
+                    </span>
+                  )}
                 </div>
-                <div className="rounded-3xl border border-[var(--color-border)] bg-[var(--color-surface)] px-4 py-3 text-sm text-[var(--color-text)]">
-                  <span className="font-semibold">Persona:</span> {personaName}
-                </div>
+                <h3 className="font-heading font-800 text-2xl sm:text-3xl text-[var(--color-text)]">
+                  {destination} · {duration} Days
+                </h3>
               </div>
 
-              <div className="mt-4 grid gap-3 sm:grid-cols-2">
-                <div className="rounded-3xl bg-[var(--color-bg)] p-4 border border-[var(--color-border)]">
-                  <p className="text-xs uppercase tracking-[0.2em] text-[var(--color-muted)] mb-2">Dates</p>
-                  <p className="font-semibold text-[var(--color-text)]">{startDate || "Flexible"} → {startDate ? new Date(new Date(startDate).getTime() + (duration - 1) * 86400000).toISOString().slice(0, 10) : "TBD"}</p>
-                </div>
-                <div className="rounded-3xl bg-[var(--color-bg)] p-4 border border-[var(--color-border)]">
-                  <p className="text-xs uppercase tracking-[0.2em] text-[var(--color-muted)] mb-2">Group</p>
-                  <p className="font-semibold text-[var(--color-text)]">{groupSize} people</p>
+              {/* Expand / Collapse All Actions */}
+              <div className="flex items-center gap-2 flex-wrap">
+                <button
+                  type="button"
+                  onClick={expandAll}
+                  className="px-3.5 py-1.5 rounded-xl text-xs font-semibold bg-white border border-[var(--color-border-mid)] text-[var(--color-text)] hover:bg-[var(--color-bg)] transition-colors btn-3d-secondary"
+                >
+                  Expand All
+                </button>
+                <button
+                  type="button"
+                  onClick={collapseAll}
+                  className="px-3.5 py-1.5 rounded-xl text-xs font-semibold bg-white border border-[var(--color-border-mid)] text-[var(--color-text)] hover:bg-[var(--color-bg)] transition-colors btn-3d-secondary"
+                >
+                  Collapse All
+                </button>
+              </div>
+            </div>
+
+            {/* Cost Prediction Banner inside Itinerary view */}
+            {costPrediction && (
+              <div className="card p-5 bg-[var(--color-surface-warm)] border border-[var(--color-border-mid)]">
+                <div className="flex items-center justify-between gap-4 flex-wrap">
+                  <div className="flex items-center gap-3">
+                    <div className="w-10 h-10 rounded-xl coral-gradient flex items-center justify-center text-white shadow-xs">
+                      <DollarSign className="w-5 h-5" />
+                    </div>
+                    <div>
+                      <p className="text-xs font-bold text-[var(--color-muted)] uppercase tracking-wider">Estimated Trip Cost</p>
+                      <p className="text-lg font-bold coral-text">₹{costPrediction.predicted_cost.toLocaleString()}</p>
+                    </div>
+                  </div>
+                  {costPrediction.suggestions.length > 0 && (
+                    <div className="text-xs text-[var(--color-muted)] font-medium">
+                      💡 {costPrediction.suggestions[0].field}: {costPrediction.suggestions[0].original_value} → {costPrediction.suggestions[0].suggested_value}
+                    </div>
+                  )}
                 </div>
               </div>
+            )}
 
-              <div className="mt-5 flex flex-col gap-3">
-                <label className="block text-sm font-medium text-[var(--color-text)]">Quick follow-up</label>
+            {/* Day Cards List */}
+            <div className="space-y-4">
+              {itinerary.map((day) => (
+                <DayCard
+                  key={day.day}
+                  day={day}
+                  isExpanded={Boolean(expandedDays[day.day])}
+                  onToggle={() => toggleDay(day.day)}
+                />
+              ))}
+            </div>
+
+            {/* Quick Follow-up Box */}
+            <div className="card p-6 space-y-4">
+              <div>
+                <h4 className="font-heading font-700 text-lg text-[var(--color-text)] mb-1">
+                  ✏️ Refine Itinerary with AI
+                </h4>
+                <p className="text-xs text-[var(--color-muted)] font-medium">
+                  Need changes? Type a quick instruction below (e.g. &ldquo;Make day 2 more relaxed&rdquo; or &ldquo;Add more local food places&rdquo;).
+                </p>
+              </div>
+
+              <div className="relative">
                 <textarea
                   value={followup}
                   onChange={(event) => setFollowup(event.target.value)}
                   rows={3}
-                  placeholder="Example: Make day 2 more relaxed and add a local beach picnic instead of a museum tour."
-                  className="input-base min-h-[110px] resize-none"
+                  placeholder="e.g. Swap day 1 evening activity with a sunset boat ride..."
+                  className="w-full p-4 rounded-2xl border border-[var(--color-border-mid)] bg-white text-sm font-medium text-[var(--color-text)] placeholder:text-[var(--color-muted)] focus:outline-none focus:ring-2 focus:ring-[var(--color-coral)]/30 focus:border-[var(--color-coral)] transition-all resize-none"
                 />
-                <div className="flex gap-3 flex-wrap">
-                  <button
-                    type="button"
-                    disabled={!followup.trim() || followupLoading}
-                    onClick={handleFollowup}
-                    className="inline-flex items-center gap-2 px-4 py-3 rounded-3xl text-sm font-semibold text-white coral-gradient shadow-coral transition-all duration-200 disabled:cursor-not-allowed disabled:opacity-60"
-                  >
-                    {followupLoading ? <Loader2 className="w-4 h-4 animate-spin" /> : <MessageSquare className="w-4 h-4" />}
-                    Apply follow-up
-                  </button>
+              </div>
+
+              <div className="flex items-center gap-3">
+                <button
+                  type="button"
+                  disabled={!followup.trim() || followupLoading}
+                  onClick={handleFollowup}
+                  className="inline-flex items-center gap-2 px-5 py-2.5 rounded-xl text-xs font-bold text-white btn-3d-primary disabled:opacity-60 disabled:cursor-not-allowed"
+                >
+                  {followupLoading ? <Loader2 className="w-4 h-4 animate-spin" /> : <MessageSquare className="w-4 h-4" />}
+                  Apply AI Update →
+                </button>
+                {followup && (
                   <button
                     type="button"
                     onClick={() => setFollowup("")}
-                    className="inline-flex items-center gap-2 px-4 py-3 rounded-3xl text-sm font-semibold border border-[var(--color-border-mid)] bg-white text-[var(--color-text)] hover:bg-[var(--color-bg)] transition-all duration-200"
+                    className="text-xs font-semibold text-[var(--color-muted)] hover:text-[var(--color-text)] transition-colors"
                   >
                     Clear
                   </button>
-                </div>
+                )}
               </div>
 
               {updatedDays && (
-                <div className="mt-4 rounded-3xl border border-[var(--color-teal-light)] bg-[var(--color-teal-light)] px-4 py-3 text-sm text-[var(--color-teal-dark)]">
-                  <CheckCircle2 className="inline-block w-4 h-4 mr-2" /> Updated day{updatedDays.length > 1 ? "s" : ""}: {updatedDays.join(", ")}
-                </div>
-              )}
-              {generatedBy && (
-                <div className="mt-4 rounded-3xl border border-[var(--color-border-mid)] bg-[var(--color-bg)] px-4 py-3 text-sm text-[var(--color-text)]">
-                  Generated by: <span className="font-semibold">{generatedBy}</span>
+                <div className="rounded-xl border border-teal-300 bg-teal-50 px-4 py-2.5 text-xs font-semibold text-teal-800 flex items-center gap-2">
+                  <CheckCircle2 className="w-4 h-4 text-teal-600" />
+                  <span>Updated days: {updatedDays.join(", ")}</span>
                 </div>
               )}
             </div>
 
-            <div className="space-y-4">
-              {itinerary.map((day) => (
-                <DayCard key={`day-${day.day}`} day={day} />
-              ))}
+            {/* Save Trip CTA */}
+            <div className="card p-5 flex flex-col sm:flex-row items-center justify-between gap-4 bg-gradient-to-r from-teal-500/5 to-coral-500/5 border border-[var(--color-border-mid)]">
+              <div>
+                <h4 className="font-heading font-700 text-base text-[var(--color-text)] mb-0.5">
+                  💾 Save This Trip
+                </h4>
+                <p className="text-xs text-[var(--color-muted)] font-medium">
+                  {saveStatus === "saved"
+                    ? "Trip saved successfully! View it anytime in My Trips."
+                    : session
+                    ? "Save this itinerary to your account for future reference."
+                    : "💡 Sign in to save this itinerary"}
+                </p>
+              </div>
+
+              <button
+                id="save-trip-btn"
+                type="button"
+                disabled={saveStatus === "saving" || saveStatus === "saved"}
+                onClick={handleSaveTrip}
+                className={`inline-flex items-center gap-2 px-6 py-3 rounded-2xl text-xs font-bold transition-all shadow-xs ${
+                  saveStatus === "saved"
+                    ? "bg-emerald-600 text-white cursor-default"
+                    : "btn-3d-primary text-white"
+                }`}
+              >
+                {saveStatus === "saving" ? (
+                  <Loader2 className="w-4 h-4 animate-spin" />
+                ) : saveStatus === "saved" ? (
+                  <BookmarkCheck className="w-4 h-4" />
+                ) : (
+                  <Sparkles className="w-4 h-4" />
+                )}
+                {saveStatus === "saved" ? "Saved to My Trips!" : "Save Trip"}
+              </button>
             </div>
           </div>
-        ) : (
-          <div className="card p-8 text-center">
-            <div className="mx-auto mb-5 flex h-16 w-16 items-center justify-center rounded-full teal-gradient text-white shadow-teal">
-              <Sparkles className="w-6 h-6" />
-            </div>
-            <p className="text-lg font-semibold text-[var(--color-text)]">Your itinerary will appear here.</p>
-            <p className="mt-2 text-sm text-[var(--color-muted)]">Enter your trip details and click Generate itinerary to see a curated day-by-day plan.</p>
-          </div>
-        )}
-      </section>
-    </div>
+        ) : null}
+      </div>
+
+      {showAuthModal && (
+        <AuthModal
+          onClose={() => setShowAuthModal(false)}
+          onSuccess={() => setShowAuthModal(false)}
+          triggerMessage="Sign in to save this itinerary to your account"
+        />
+      )}
+    </>
   );
 }

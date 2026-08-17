@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import "./globals.css";
 import { UserJourneyProvider } from "@/context/UserJourneyContext";
+import { SessionProvider } from "next-auth/react";
 
 export const metadata: Metadata = {
   title: "Journey Curator AI — Smart Travel Cost Predictor",
@@ -18,9 +19,11 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
   return (
     <html lang="en">
       <body className="antialiased">
-        <UserJourneyProvider>
-          {children}
-        </UserJourneyProvider>
+        <SessionProvider>
+          <UserJourneyProvider>
+            {children}
+          </UserJourneyProvider>
+        </SessionProvider>
       </body>
     </html>
   );

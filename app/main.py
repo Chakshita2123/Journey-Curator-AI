@@ -4,7 +4,6 @@ from pydantic import BaseModel, Field
 from typing import Optional, Any, List
 
 from ml.model import get_prediction_with_suggestions, ModelLoadError
-from ml.persona import predict_persona
 from ml.destination_recommender import get_recommender
 
 app = FastAPI(title="Journey Curator AI Cost Predictor API")
@@ -32,6 +31,7 @@ def make_optional_str_field(name: str) -> Optional[str]:
 class TripRequest(BaseModel):
     destination: str
     duration: float
+    origin: Optional[str] = None
     accommodation_type: Optional[str] = None
     transportation_type: Optional[str] = None
     age: Optional[int] = None
@@ -42,14 +42,6 @@ class TripRequest(BaseModel):
     group_size: Optional[int] = None
     additional_data: Optional[dict[str, Any]] = None
 
-
-class PersonaRequest(BaseModel):
-    nature_vs_nightlife: int = Field(3, ge=1, le=5)
-    budget_vs_luxury: int = Field(3, ge=1, le=5)
-    activity_level: int = Field(3, ge=1, le=5)
-    food_preference: int = Field(3, ge=1, le=5)
-    travel_pace: int = Field(3, ge=1, le=5)
-    cultural_depth: int = Field(3, ge=1, le=5)
 
 
 class DestinationRecommendation(BaseModel):
@@ -66,9 +58,8 @@ class DestinationRecommendation(BaseModel):
     match_score: float
     description: str
 
-
 class RecommendDestinationsRequest(BaseModel):
-    persona: str = Field(..., description="One of: Adventurer, Relaxed Vacationer, Culture & Food Explorer, Budget Backpacker, Luxury Wellness Seeker")
+    persona: Optional[str] = Field("General", description="Optional traveler style (default: General)")
     top_k: Optional[int] = Field(10, ge=1, le=50, description="Number of recommendations (default: 10)")
 
 
@@ -88,15 +79,6 @@ async def predict_cost(request: TripRequest) -> dict:
         raise HTTPException(status_code=500, detail=str(exc))
     except Exception as exc:
         raise HTTPException(status_code=500, detail=f"Prediction failed: {exc}")
-
-
-@app.post("/predict-persona")
-async def predict_persona_endpoint(request: PersonaRequest) -> dict:
-    try:
-        result = predict_persona(request.model_dump())
-        return result
-    except Exception as exc:
-        raise HTTPException(status_code=500, detail=f"Persona classification failed: {exc}")
 
 
 @app.post("/recommend-destinations")

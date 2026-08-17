@@ -3,6 +3,8 @@
 import { RefreshCcw, TrendingDown, CheckCircle2, AlertTriangle, ArrowRight } from "lucide-react";
 import type { PredictResponse } from "@/types/api";
 import { AnimatedProgressBar, motion } from "@/components/motion";
+import WeatherWidget from "@/components/WeatherWidget";
+import TripSplitter from "@/components/TripSplitter";
 
 interface Props {
   result: PredictResponse;
@@ -18,11 +20,11 @@ function BudgetGauge({ predicted, budget }: { predicted: number; budget?: number
   return (
     <div className="mt-5 space-y-2">
       <div className="flex justify-between text-xs font-medium">
-        <span className="text-[var(--color-muted)]">Budget: ${budget.toLocaleString()}</span>
+        <span className="text-[var(--color-muted)]">Budget: ₹{budget.toLocaleString("en-IN")}</span>
         <span style={{ color: over ? "var(--color-danger)" : "var(--color-success)" }}>
           {over
-            ? `$${(predicted - budget).toLocaleString()} over`
-            : `$${(budget - predicted).toLocaleString()} under`}
+            ? `₹${(predicted - budget).toLocaleString("en-IN")} over`
+            : `₹${(budget - predicted).toLocaleString("en-IN")} under`}
         </span>
       </div>
       <AnimatedProgressBar
@@ -47,7 +49,7 @@ const FIELD_LABELS: Record<string, string> = {
 };
 
 export default function ResultCard({ result, destination, duration, onReset }: Props) {
-  const { predicted_cost, budget, suggestions } = result;
+  const { predicted_cost, budget, suggestions, best_season, origin, transport_note } = result;
   const withinBudget = !budget || predicted_cost <= budget;
 
   return (
@@ -64,11 +66,17 @@ export default function ResultCard({ result, destination, duration, onReset }: P
           Estimated Trip Cost
         </p>
         <p className="font-heading font-900 text-6xl coral-text">
-          ${predicted_cost.toLocaleString()}
+          ₹{predicted_cost.toLocaleString("en-IN")}
         </p>
         <p className="mt-2 text-[var(--color-muted)] text-sm font-medium">
-          {destination} · {duration} {duration === 1 ? "day" : "days"}
+          {origin ? `From ${origin} to ${destination}` : destination} · {duration} {duration === 1 ? "day" : "days"}
         </p>
+
+        {transport_note && (
+          <div className="mt-3 p-2.5 rounded-xl bg-[var(--color-surface-warm)] border border-[rgba(108,92,231,0.12)] text-xs text-[var(--color-muted)] font-medium inline-block">
+            🛫 {transport_note}
+          </div>
+        )}
 
         <BudgetGauge predicted={predicted_cost} budget={budget} />
 
@@ -89,6 +97,27 @@ export default function ResultCard({ result, destination, duration, onReset }: P
             : <><AlertTriangle className="w-4 h-4" /> Over Budget — See suggestions below</>}
         </motion.div>
       </div>
+
+      {/* ── Best Time to Visit Card ─────────────── */}
+      {best_season && (
+        <motion.div
+          initial={{ opacity: 0, y: 15 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ delay: 0.25 }}
+          className="card p-5 border border-[rgba(108,92,231,0.18)]"
+          style={{ background: "linear-gradient(135deg, rgba(255,255,255,0.9), rgba(240,248,255,0.9))" }}
+        >
+          <div className="flex items-center gap-3">
+            <div className="w-10 h-10 rounded-2xl bg-amber-100 text-amber-600 flex items-center justify-center text-xl shrink-0 font-bold">
+              ☀️
+            </div>
+            <div>
+              <p className="text-xs uppercase tracking-wider font-bold text-[var(--color-coral)]">Best Time to Visit {destination}</p>
+              <p className="text-sm font-semibold text-[var(--color-text)] mt-0.5">{best_season}</p>
+            </div>
+          </div>
+        </motion.div>
+      )}
 
       {/* ── Suggestions ────────────────────────── */}
       {suggestions.length > 0 && (
@@ -122,7 +151,7 @@ export default function ResultCard({ result, destination, duration, onReset }: P
                 </div>
                 <div className="text-right">
                   <p className="font-bold text-sm" style={{ color: "var(--color-success)" }}>
-                    ${s.predicted_cost.toLocaleString()}
+                    ₹{s.predicted_cost.toLocaleString("en-IN")}
                   </p>
                   <p className="text-xs text-[var(--color-muted)]">new cost</p>
                 </div>
@@ -132,7 +161,18 @@ export default function ResultCard({ result, destination, duration, onReset }: P
         </motion.div>
       )}
 
-      {/* ── Reset ──────────────────────────────── */}
+      {/* Feature 3: Weather widget (compact) */}
+      <WeatherWidget destination={destination} compact />
+
+      {/* Feature 2: Group Trip Splitter */}
+      <TripSplitter
+        totalCost={predicted_cost}
+        destination={destination}
+        duration={duration}
+        initialGroupSize={1}
+      />
+
+      {/* ── Reset ──────────────────────────────────── */}
       <button
         id="predict-reset-btn"
         type="button"

@@ -9,6 +9,7 @@ import type { TripRequest, PredictResponse } from "@/types/api";
 import ResultCard from "./ResultCard";
 import { motion, LoadingStateCard, ErrorStateCard } from "@/components/motion";
 import { useUserJourney } from "@/context/UserJourneyContext";
+import DestinationAutocomplete from "@/components/DestinationAutocomplete";
 
 const STEPS = [
   { id: "destination", label: "Where?",  icon: MapPin  },
@@ -23,10 +24,21 @@ const TRANSPORT_TYPES      = ["Flight", "Train", "Bus", "Car rental", "Ferry", "
 const TRAVEL_STYLES        = ["Luxury", "Comfort", "Budget", "Backpacker", "Adventure", "Relaxed"];
 const SEASONS              = ["Summer", "Winter", "Spring", "Fall", "Monsoon"];
 const NATIONALITIES        = [
-  "American", "British", "Canadian", "Australian", "Indian", "Chinese",
+  "Indian", "American", "British", "Canadian", "Australian", "Chinese",
   "German", "French", "Japanese", "Korean", "Brazilian", "Spanish",
   "Italian", "Dutch", "Vietnamese", "Indonesian", "Thai", "Emirati",
 ];
+const POPULAR_ORIGINS      = ["Delhi", "Mumbai", "Bengaluru", "Kolkata", "Chennai", "Hyderabad", "Pune", "Jaipur"];
+
+const getDestinationSeasonHint = (dest: string) => {
+  const d = dest.toLowerCase().trim();
+  if (!d) return null;
+  if (d.includes("goa") || d.includes("jaipur") || d.includes("kerala") || d.includes("agra") || d.includes("udaipur") || d.includes("delhi") || d.includes("kolkata")) return { raw: "Winter", text: "Winter (Oct - Mar) — Ideal pleasant weather & festivals" };
+  if (d.includes("manali") || d.includes("shimla") || d.includes("ladakh") || d.includes("leh") || d.includes("ooty")) return { raw: "Summer", text: "Summer (Mar - Jun) — Pleasant mountain getaway" };
+  if (d.includes("srinagar") || d.includes("darjeeling")) return { raw: "Spring", text: "Spring / Autumn — Clear mountain views & blooms" };
+  if (d.includes("pune") || d.includes("lonavala")) return { raw: "Monsoon", text: "Monsoon / Winter — Scenic lush Sahyadri hills" };
+  return { raw: "Winter", text: "Winter (Oct - Mar) — Pleasant travel season" };
+};
 
 /* ── Step progress bar ──────────────────────────────────── */
 function StepBar({ current }: { current: number }) {
@@ -65,8 +77,8 @@ function StepBar({ current }: { current: number }) {
 }
 
 /* ── Option chip with Micro-interaction scale bounce ─────────── */
-function Chip({ value, selected, onClick, id }: {
-  value: string; selected: boolean; onClick: () => void; id: string;
+function Chip({ value, selected, onClick, id, badge }: {
+  value: string; selected: boolean; onClick: () => void; id: string; badge?: string;
 }) {
   return (
     <motion.div whileTap={{ scale: 0.95 }} whileHover={{ scale: 1.04 }}>
@@ -74,13 +86,14 @@ function Chip({ value, selected, onClick, id }: {
         id={id}
         type="button"
         onClick={onClick}
-        className={`px-4 py-2 rounded-2xl text-sm font-medium border-2 transition-all duration-200 ${
+        className={`px-4 py-2 rounded-2xl text-sm font-medium border-2 transition-all duration-200 flex items-center gap-1.5 ${
           selected
             ? "border-[var(--color-coral)] bg-[var(--color-coral-light)] text-[var(--color-coral)] font-semibold shadow-[0_2px_12px_rgba(108,92,231,0.20)]"
             : "border-[var(--color-border-mid)] text-[var(--color-muted)] hover:border-[var(--color-coral-mid)] hover:text-[var(--color-text)] bg-white"
         }`}
       >
-        {value}
+        <span>{value}</span>
+        {badge && <span className="text-[10px] bg-[var(--color-coral)] text-white px-1.5 py-0.5 rounded-full font-bold">{badge}</span>}
       </button>
     </motion.div>
   );
@@ -124,14 +137,17 @@ export default function PredictForm() {
 
   const [destination, setDestination]     = useState(journey.selectedDestination || "");
   const [duration, setDuration]           = useState<number | "">(journey.duration || 7);
+  const [origin, setOrigin]               = useState(journey.origin || "Delhi");
   const [accommodation, setAccommodation] = useState(journey.accommodation || "");
   const [transport, setTransport]         = useState(journey.transport || "");
-  const [travelStyle, setTravelStyle]     = useState(journey.travelStyle || (journey.persona?.recommended_styles[0] ?? ""));
+  const [travelStyle, setTravelStyle]     = useState(journey.travelStyle || "");
   const [season, setSeason]               = useState(journey.season || "");
   const [age, setAge]                     = useState<number | "">("");
-  const [nationality, setNationality]     = useState("");
+  const [nationality, setNationality]     = useState("Indian");
   const [groupSize, setGroupSize]         = useState<number | "">(journey.groupSize || "");
   const [budget, setBudget]               = useState<number | "">(journey.budget || "");
+
+  const seasonHint = getDestinationSeasonHint(destination);
 
   const canNext = () => {
     if (step === 0) return destination.trim().length > 0 && Number(duration) > 0;
@@ -152,6 +168,7 @@ export default function PredictForm() {
     const payload: TripRequest = {
       destination: cleanDest,
       duration: cleanDuration,
+      ...(origin && { origin: origin.trim() }),
       ...(accommodation && { accommodation_type: accommodation }),
       ...(transport && { transportation_type: transport }),
       ...(travelStyle && { travel_style: travelStyle }),
@@ -174,6 +191,7 @@ export default function PredictForm() {
       setTripCost(costData, {
         selectedDestination: cleanDest,
         duration: cleanDuration,
+        origin,
         accommodation,
         transport,
         travelStyle,
@@ -215,6 +233,20 @@ export default function PredictForm() {
 
   return (
     <div className="card p-8 max-w-xl w-full mx-auto">
+      {journey.selectedDestination && (
+        <div className="mb-6 p-3.5 rounded-2xl bg-[#EEECFC] border border-[#6C5CE7]/30 flex items-center justify-between gap-3 text-xs shadow-xs">
+          <div className="flex items-center gap-2">
+            <span className="text-base">✨</span>
+            <p className="text-[#2D2A4A] font-medium">
+              Pre-filled from your itinerary: <strong className="text-[#6C5CE7]">{journey.selectedDestination}</strong> ({duration} days{journey.accommodation ? ` · ${journey.accommodation}` : ""})
+            </p>
+          </div>
+          <span className="text-[10px] font-bold uppercase tracking-wider px-2 py-0.5 rounded-full bg-[#6C5CE7] text-white shrink-0">
+            Connected Flow
+          </span>
+        </div>
+      )}
+
       <StepBar current={step} />
 
       {/* ── Step content ─────────────────────────── */}
@@ -230,8 +262,32 @@ export default function PredictForm() {
               <h2 className="font-heading font-700 text-2xl text-[var(--color-text)]">Where are you headed? 🌍</h2>
               <p className="text-[var(--color-muted)] text-sm mt-1">Tell us your destination and trip length.</p>
             </div>
-            <Field id="destination-input" label="Destination" value={destination}
-              onChange={setDestination} placeholder="Paris, Bali, Tokyo, New York…" />
+            <div>
+              <label className="text-sm font-medium text-[var(--color-text)] mb-1.5 block">Destination</label>
+              <DestinationAutocomplete
+                id="destination-input"
+                value={destination}
+                onChange={setDestination}
+                placeholder="Goa, Manali, Jaipur, Kerala..."
+                showIcon={true}
+                size="md"
+              />
+            </div>
+            
+            {destination.trim().length > 0 && seasonHint && (
+              <motion.div
+                initial={{ opacity: 0, y: 5 }}
+                animate={{ opacity: 1, y: 0 }}
+                className="p-3.5 rounded-2xl bg-[var(--color-surface-warm)] border border-[rgba(108,92,231,0.18)] flex items-center gap-3 text-xs text-[var(--color-text)] shadow-sm"
+              >
+                <span className="text-lg">☀️</span>
+                <div>
+                  <span className="font-bold text-[var(--color-coral)]">Best Time to Visit: </span>
+                  <span className="font-medium text-[var(--color-text)]">{seasonHint.text}</span>
+                </div>
+              </motion.div>
+            )}
+
             <Field id="duration-input" label="How many days?" type="number"
               value={duration} onChange={(v) => setDuration(v === "" ? "" : Number(v))}
               placeholder="7" min={1} max={365} />
@@ -257,8 +313,37 @@ export default function PredictForm() {
           <div className="flex flex-col gap-6">
             <div>
               <h2 className="font-heading font-700 text-2xl text-[var(--color-text)]">How will you get there? ✈️</h2>
-              <p className="text-[var(--color-muted)] text-sm mt-1">Transport type, travel style, and season.</p>
+              <p className="text-[var(--color-muted)] text-sm mt-1">Origin city, transport type, travel style, and season.</p>
             </div>
+
+            {/* Where are you traveling from? */}
+            <div>
+              <SectionLabel>Where are you traveling from?</SectionLabel>
+              <Field
+                id="origin-input"
+                label=""
+                value={origin}
+                onChange={setOrigin}
+                placeholder="e.g. Delhi, Mumbai, Bengaluru..."
+              />
+              <div className="flex flex-wrap gap-2 mt-2.5">
+                {POPULAR_ORIGINS.map((o) => (
+                  <button
+                    key={o}
+                    type="button"
+                    onClick={() => setOrigin(o)}
+                    className={`px-3 py-1 rounded-xl text-xs font-medium border transition-all ${
+                      origin.toLowerCase() === o.toLowerCase()
+                        ? "bg-[var(--color-coral-light)] border-[var(--color-coral)] text-[var(--color-coral)] font-semibold shadow-xs"
+                        : "bg-white border-[var(--color-border-mid)] text-[var(--color-muted)] hover:border-[var(--color-coral-mid)] hover:text-[var(--color-text)]"
+                    }`}
+                  >
+                    📍 {o}
+                  </button>
+                ))}
+              </div>
+            </div>
+
             <div>
               <SectionLabel>Transport</SectionLabel>
               <div className="flex flex-wrap gap-3">
@@ -280,10 +365,19 @@ export default function PredictForm() {
             <div>
               <SectionLabel>Season</SectionLabel>
               <div className="flex flex-wrap gap-3">
-                {SEASONS.map((s) => (
-                  <Chip key={s} id={`season-${s.toLowerCase()}`}
-                    value={s} selected={season === s} onClick={() => setSeason(s)} />
-                ))}
+                {SEASONS.map((s) => {
+                  const isBest = seasonHint && seasonHint.raw.toLowerCase() === s.toLowerCase();
+                  return (
+                    <Chip
+                      key={s}
+                      id={`season-${s.toLowerCase()}`}
+                      value={s}
+                      selected={season === s}
+                      onClick={() => setSeason(s)}
+                      badge={isBest ? "Best" : undefined}
+                    />
+                  );
+                })}
               </div>
             </div>
           </div>
@@ -309,8 +403,7 @@ export default function PredictForm() {
                 onChange={(e) => setNationality(e.target.value)}
                 className="input-base"
               >
-                <option value="">Select…</option>
-                {NATIONALITIES.map((n) => <option key={n} value={n}>{n}</option>)}
+                {NATIONALITIES.map((n) => <option key={n} value={n}>{n}{n === "Indian" ? " (Default)" : ""}</option>)}
               </select>
             </div>
           </div>
@@ -324,8 +417,8 @@ export default function PredictForm() {
                 Optional — if the predicted cost exceeds this, we&apos;ll suggest ways to save.
               </p>
             </div>
-            <Field id="budget-input" label="Budget (USD)" type="number"
-              value={budget} onChange={(v) => setBudget(v === "" ? "" : Number(v))} placeholder="e.g. 2000" />
+            <Field id="budget-input" label="Budget (₹ INR)" type="number"
+              value={budget} onChange={(v) => setBudget(v === "" ? "" : Number(v))} placeholder="e.g. 50000" />
 
             {/* Trip summary */}
             <div
@@ -333,10 +426,12 @@ export default function PredictForm() {
               style={{ background: "var(--color-surface-warm)", border: "1px solid rgba(108,92,231,0.12)" }}
             >
               <p className="font-semibold text-[var(--color-text)] mb-1">📋 Trip summary</p>
-              <p className="text-[var(--color-muted)]">📍 <strong>{destination}</strong> · {duration} days</p>
+              <p className="text-[var(--color-muted)]">📍 Destination: <strong>{destination}</strong> · {duration} days</p>
+              {origin && <p className="text-[var(--color-muted)]">🛫 Traveling from: <strong>{origin}</strong></p>}
               <p className="text-[var(--color-muted)]">🏨 {accommodation} &nbsp;·&nbsp; ✈️ {transport}</p>
               {travelStyle && <p className="text-[var(--color-muted)]">🎒 {travelStyle} style{season ? ` · ${season}` : ""}</p>}
               {age && <p className="text-[var(--color-muted)]">👤 Age {age}{nationality ? ` · ${nationality}` : ""}</p>}
+              {seasonHint && <p className="text-[var(--color-muted)]">☀️ Best Season: {seasonHint.text}</p>}
             </div>
           </div>
         )}

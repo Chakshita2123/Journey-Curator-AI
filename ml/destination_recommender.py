@@ -18,8 +18,18 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 DATA_DIR = BASE_DIR / "data"
 MODELS_DIR = BASE_DIR / "models"
 
-# Persona-to-destination attribute mappings (learned from Phase 3)
+# Persona-to-destination attribute mappings (or general default)
 PERSONA_FEATURE_PROFILES = {
+    "General": {
+        "travel_type": ["Solo", "Couple", "Family", "Group"],
+        "category": ["Historic", "Natural", "Cultural", "Religious"],
+        "activity_level": 3.0,
+        "budget_level": 2.5,
+        "pace": 3.0,
+        "cultural_depth": 3.0,
+        "weather_suitability": 0.8,
+        "rating_weight": 0.8,
+    },
     "Adventurer": {
         "travel_type": ["Solo", "Group"],  # High-energy group travel
         "category": ["Natural", "Adventure"],  # Nature-based

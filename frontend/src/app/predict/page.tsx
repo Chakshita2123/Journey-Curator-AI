@@ -21,7 +21,7 @@ export default function PredictPage() {
         />
 
         {/* Top Step Breadcrumb */}
-        <JourneyBreadcrumb currentStep={2} />
+        <JourneyBreadcrumb currentStep={4} />
 
         <motion.div
           initial={{ opacity: 0, y: 20 }}
@@ -34,7 +34,7 @@ export default function PredictPage() {
               className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full text-xs font-semibold shadow-xs"
               style={{ background: "var(--color-coral-light)", color: "var(--color-coral)" }}
             >
-              ✨ Powered by XGBoost · Step 2
+              ✨ Powered by XGBoost · Step 4 of 4
             </div>
             <div className="inline-flex items-center gap-1.5 px-3.5 py-1.5 rounded-full text-xs font-bold bg-[#E6F8F4] text-[#008F73] border border-[#55EFC4]/40 shadow-xs">
               🌐 Works Worldwide
@@ -44,14 +44,14 @@ export default function PredictPage() {
             Predict Your <span className="coral-text">Trip Cost</span>
           </h1>
           <p className="mt-3 text-[var(--color-muted)] text-sm leading-relaxed font-medium">
-            Global coverage for any destination worldwide — our ML model estimates your total cost and suggests ways to save if you&apos;re over budget.
+            Pre-filled with your selected destination and itinerary choices. Calculate total estimated trip cost and optimize your budget.
           </p>
         </motion.div>
 
         <PredictForm />
 
         {/* Bottom Next Step CTA */}
-        <JourneyNextStep currentStep={2} />
+        <JourneyNextStep currentStep={4} />
       </main>
     </>
   );

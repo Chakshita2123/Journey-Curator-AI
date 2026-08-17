@@ -1,13 +1,13 @@
 "use client";
 
 import React, { createContext, useContext, useState, useEffect } from "react";
-import type { PersonaResponse, PredictResponse } from "@/types/api";
+import type { PredictResponse } from "@/types/api";
 
 export interface JourneyData {
-  persona: PersonaResponse | null;
   tripCost: PredictResponse | null;
   selectedDestination: string;
   duration: number;
+  origin: string;
   accommodation: string;
   transport: string;
   travelStyle: string;
@@ -18,17 +18,16 @@ export interface JourneyData {
 
 interface UserJourneyContextType {
   journey: JourneyData;
-  setPersona: (persona: PersonaResponse) => void;
   setTripCost: (res: PredictResponse, inputs: Partial<JourneyData>) => void;
   setTripInputs: (inputs: Partial<JourneyData>) => void;
   resetJourney: () => void;
 }
 
 const DEFAULT_JOURNEY: JourneyData = {
-  persona: null,
   tripCost: null,
   selectedDestination: "",
   duration: 7,
+  origin: "Delhi",
   accommodation: "",
   transport: "",
   travelStyle: "",
@@ -67,15 +66,6 @@ export function UserJourneyProvider({ children }: { children: React.ReactNode })
     }
   };
 
-  const setPersona = (persona: PersonaResponse) => {
-    const defaultStyle = persona.recommended_styles[0] || "";
-    saveState({
-      ...journey,
-      persona,
-      travelStyle: journey.travelStyle || defaultStyle,
-    });
-  };
-
   const setTripCost = (tripCost: PredictResponse, inputs: Partial<JourneyData>) => {
     saveState({
       ...journey,
@@ -96,7 +86,7 @@ export function UserJourneyProvider({ children }: { children: React.ReactNode })
   };
 
   return (
-    <UserJourneyContext.Provider value={{ journey, setPersona, setTripCost, setTripInputs, resetJourney }}>
+    <UserJourneyContext.Provider value={{ journey, setTripCost, setTripInputs, resetJourney }}>
       {children}
     </UserJourneyContext.Provider>
   );
@@ -108,7 +98,6 @@ export function useUserJourney() {
     // Return graceful default if called outside provider
     return {
       journey: DEFAULT_JOURNEY,
-      setPersona: () => {},
       setTripCost: () => {},
       setTripInputs: () => {},
       resetJourney: () => {},

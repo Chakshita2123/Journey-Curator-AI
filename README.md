@@ -1,6 +1,8 @@
 # ✈️ Journey Curator AI
 
-**Journey Curator AI** is a full-stack, machine learning and LLM-powered travel intelligence platform. It predicts exact trip costs using trained ML pipelines, classifies user travel personas, recommends curated destinations, and generates personalized day-by-day travel itineraries.
+**Journey Curator AI** is a full-stack, machine learning and LLM-powered travel intelligence platform. It predicts exact trip costs using trained ML pipelines, recommends curated destinations, and generates personalized day-by-day travel itineraries.
+
+The user flow follows a clean **3-step connected product journey**: Discover Destinations → AI Itinerary Generator → Cost Predictor & Budget Check.
 
 Built with **Next.js 15**, **React 19**, **TailwindCSS v4**, **Framer Motion**, **Python FastAPI**, **XGBoost**, **Scikit-learn**, and a **Dual Gemini / Groq LLM Fallback Provider**.
 
@@ -46,6 +48,8 @@ Trained on `data/Travel details dataset.csv` across global destinations (Paris, 
 *5-fold Cross-Validation Mean R²:* `0.7174 ± 0.3471`.
 
 > ⚠️ **Small-Dataset Disclosure:** The training dataset consists of 138 curated global trip records. While the XGBoost model achieves an R² of 0.94 within the trained feature space, predictions for highly atypical or rare route combinations rely on tree feature interpolations.
+>
+> ℹ️ **Origin Transport Cost Adjustment Note:** Transport cost adjustment for origin city uses a simple region-based heuristic (same-region discount, cross-country premium), not a model-learned feature — the core cost prediction (XGBoost) remains trained on destination/duration/demographics only.
 
 ---
 
@@ -55,29 +59,10 @@ Trained on `data/Travel details dataset.csv` across global destinations (Paris, 
 
 ---
 
-### Phase 3 — Travel Persona Classifier
-Classifies travelers into 1 of 5 distinct travel personas based on 6 key preference vectors (scale 1–5):
-1. `nature_vs_nightlife`
-2. `budget_vs_luxury`
-3. `activity_level`
-4. `food_preference`
-5. `travel_pace`
-6. `cultural_depth`
-
-#### 5 Travel Personas
-- **Adventurer** 🧗
-- **Relaxed Vacationer** 🏖️
-- **Culture & Food Explorer** 🎨
-- **Budget Backpacker** 🎒
-- **Luxury Wellness Seeker** 👑
-
-#### Model Metrics & Synthetic Dataset Disclosure
-Due to the absence of a publicly available labeled traveler-persona dataset, a 3,000-row preference dataset was generated using domain-engineered **heuristic scoring functions** with a 4% random noise mask to simulate human decision variance.
-
-| Model | Test Accuracy | Weighted F1 | 5-Fold CV Mean F1 |
-| :--- | :--- | :--- | :--- |
-| **RandomForestClassifier ★** | **97.83%** | **0.9782** | **0.9754 ± 0.0051** |
-| LogisticRegression | 95.83% | 0.9582 | 0.9550 ± 0.0062 |
+### Phase 3 — Travel Persona Classifier *(Removed from Final Product Scope)*
+> ℹ️ **Scope Note:** The Travel Persona Quiz was removed from the final user product to deliver a more streamlined, zero-friction **3-step connected product flow**:  
+> **1. Discover Destinations** ➔ **2. AI Day-by-Day Itinerary** ➔ **3. Cost Predictor & Budget Check**.  
+> The underlying classification research and model files (`ml/persona.py`, `ml/train_persona.py`) remain archived in the repository for reference. The `/predict-persona` API endpoint returns HTTP 410 Gone.
 
 ---
 
@@ -93,7 +78,7 @@ Matches travel personas to optimal destinations using **Cosine Similarity** acro
 ---
 
 ### Phase 5 — AI Day-by-Day Itinerary Generator
-Generates structured day-by-day travel plans incorporating predicted cost insights, budget optimization tips, travel persona intelligence, and recommended attractions.
+Generates structured day-by-day travel plans incorporating predicted cost insights, budget optimization tips, and destination-specific recommendations.
 
 #### Dual LLM Fallback Provider Setup
 1. **Primary Provider:** Google Gemini API (`gemini-1.5-flash`).
@@ -172,7 +157,6 @@ Open [http://localhost:3000](http://localhost:3000) in your browser.
 | Endpoint | Method | Description |
 | :--- | :--- | :--- |
 | `POST /predict-cost` | `POST` | Returns ML cost prediction & savings suggestions |
-| `POST /predict-persona` | `POST` | Returns ML travel persona classification & affinity breakdown |
 | `POST /recommend-destinations` | `POST` | Returns cosine similarity destination matches |
 | `POST /generate-itinerary` | `POST` | Generates LLM day-by-day itinerary (Gemini + Groq fallback) |
 | `GET /recommender-stats` | `GET` | Returns corpus statistics for recommender engine |
@@ -182,5 +166,4 @@ Open [http://localhost:3000](http://localhost:3000) in your browser.
 ## ⚠️ Known Limitations
 
 1. **Cost Predictor Training Size:** The Cost Predictor dataset contains ~138 historical records. While XGBoost achieves `R² = 0.94` on in-domain inputs, unusual custom trip inputs rely on feature tree interpolation.
-2. **Persona Synthetic Dataset:** Persona Classifier training data is synthetically labeled using domain-engineered heuristics.
-3. **Recommender Initial Scope:** Initial destination corpus comprises 13,000+ Indian tourist places; adding global destinations requires appending regional datasets into the feature pipeline.
+2. **Recommender Initial Scope:** Initial destination corpus comprises 13,000+ Indian tourist places; adding global destinations requires appending regional datasets into the feature pipeline.

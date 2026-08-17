@@ -187,14 +187,14 @@ export default function SampleItineraryShowcase() {
               Want your own personalized itinerary?
             </p>
             <p className="text-xs text-[var(--color-muted)] font-medium">
-              Discover your travel persona & get custom AI recommendations in 60 seconds.
+              Discover top destinations &amp; get a custom AI day-by-day plan in 60 seconds.
             </p>
           </div>
           <Link
-            href="/persona"
+            href="/discover"
             className="inline-flex items-center gap-2 px-6 py-3 rounded-xl font-bold text-xs text-white btn-3d-primary shadow-xs"
           >
-            Take the Quiz
+            Start Discovering
             <ArrowRight className="w-4 h-4" />
           </Link>
         </div>
