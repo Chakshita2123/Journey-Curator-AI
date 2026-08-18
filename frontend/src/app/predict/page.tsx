@@ -21,7 +21,7 @@ export default function PredictPage() {
         />
 
         {/* Top Step Breadcrumb */}
-        <JourneyBreadcrumb currentStep={4} />
+        <JourneyBreadcrumb currentStep={3} />
 
         <motion.div
           initial={{ opacity: 0, y: 20 }}
@@ -34,7 +34,7 @@ export default function PredictPage() {
               className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full text-xs font-semibold shadow-xs"
               style={{ background: "var(--color-coral-light)", color: "var(--color-coral)" }}
             >
-              ✨ Powered by XGBoost · Step 4 of 4
+              ✨ Powered by XGBoost · Step 3 of 3
             </div>
             <div className="inline-flex items-center gap-1.5 px-3.5 py-1.5 rounded-full text-xs font-bold bg-[#E6F8F4] text-[#008F73] border border-[#55EFC4]/40 shadow-xs">
               🌐 Works Worldwide
@@ -51,7 +51,7 @@ export default function PredictPage() {
         <PredictForm />
 
         {/* Bottom Next Step CTA */}
-        <JourneyNextStep currentStep={4} />
+        <JourneyNextStep currentStep={3} />
       </main>
     </>
   );

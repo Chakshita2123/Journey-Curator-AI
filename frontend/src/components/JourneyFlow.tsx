@@ -115,6 +115,9 @@ export function JourneyNextStep({ currentStep }: { currentStep: 1 | 2 | 3 }) {
     },
   }[currentStep];
 
+  // Defensive: if currentStep is out of range, render nothing instead of crashing
+  if (!nextStepData) return null;
+
   return (
     <motion.section
       whileInView={{ opacity: 1, y: 0 }}
