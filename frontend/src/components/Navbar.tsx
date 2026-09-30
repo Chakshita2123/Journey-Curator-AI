@@ -41,15 +41,15 @@ export default function Navbar() {
         className="fixed top-0 inset-x-0 z-50 bg-white border-b border-[var(--color-border)]"
         style={{ boxShadow: "0 2px 12px rgba(0,0,0,0.05)" }}
       >
-        <div className="max-w-6xl mx-auto flex items-center justify-between px-6 py-3.5">
+        <div className="max-w-7xl mx-auto flex items-center justify-between px-6 py-3.5">
           {/* Logo */}
-          <Link href="/" className="flex items-center gap-2 group">
+          <Link href="/" className="flex items-center gap-2.5 group">
             <div
               className="w-9 h-9 rounded-2xl coral-gradient flex items-center justify-center shadow-coral transition-transform duration-200 group-hover:scale-110 group-hover:rotate-[-4deg]"
             >
               <MapPin className="w-5 h-5 text-white" />
             </div>
-            <span className="font-heading font-800 text-lg text-[var(--color-text)] tracking-tight">
+            <span className="font-display font-[900] text-xl text-[var(--color-text)] tracking-tight">
               Journey <span className="coral-text">Curator</span>
             </span>
           </Link>

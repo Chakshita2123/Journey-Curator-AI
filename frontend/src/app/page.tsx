@@ -133,99 +133,110 @@ export default function HomePage() {
           <div className="absolute inset-0 bg-gradient-to-b from-[#F4F2FA]/60 via-[#F4F2FA]/85 to-[#F4F2FA]" />
         </div>
 
-        {/* ── Hero Section ──────────────────────────────────── */}
-        <section className="relative flex flex-col items-center justify-center px-6 pt-28 pb-12 text-center max-w-6xl mx-auto">
-          
-          {/* Top Badge with Warm Peach Highlight */}
-          <motion.div
-            initial={{ opacity: 0, y: -12 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.5, delay: 0.05 }}
-            className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-white/90 backdrop-blur-md border border-[var(--color-border)] text-sm font-medium text-[var(--color-muted)] mb-8 shadow-soft"
-          >
-            <Globe className="w-4 h-4 text-[var(--color-teal)] animate-idle" />
-            Global Trip Cost AI · XGBoost ML Model
-            <span className="px-2 py-0.5 rounded-full text-xs font-bold bg-[#FFF0EB] text-[#E05A36] border border-[#FF9776]/30">
-              ★ R² 0.94
-            </span>
-          </motion.div>
+        {/* ── Hero Section (Asymmetric 60/40 Editorial Split) ── */}
+        <section className="relative px-6 sm:px-8 pt-24 lg:pt-32 pb-16 max-w-7xl mx-auto">
+          {/* Blueprint Grid Watermark in Background */}
+          <div className="absolute inset-0 bg-blueprint-grid opacity-25 pointer-events-none -z-10" />
 
-          {/* Headline */}
-          <motion.h1
-            initial={{ opacity: 0, y: 24 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.55, delay: 0.15 }}
-            className="font-heading font-900 text-5xl md:text-7xl leading-[1.1] tracking-tight max-w-4xl text-[var(--color-text)]"
-          >
-            Plan Your Dream Trip.{" "}
-            <span className="coral-text">Know the Cost.</span>{" "}
-            <span className="peach-text">Travel Smarter.</span>
-          </motion.h1>
-
-          {/* Subtext */}
-          <motion.p
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.55, delay: 0.3 }}
-            className="mt-6 text-lg md:text-xl text-[var(--color-muted)] max-w-2xl leading-relaxed font-medium"
-          >
-            Predict your trip cost anywhere in the world — and discover India&apos;s best destinations with AI-curated recommendations.
-          </motion.p>
-
-          {/* CTAs */}
-          <motion.div
-            initial={{ opacity: 0, y: 16 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.55, delay: 0.45 }}
-            className="mt-10 flex flex-wrap gap-4 justify-center"
-          >
-            <Link
-              href="/discover"
-              id="hero-start-journey-btn"
-              className="flex items-center gap-2.5 px-8 py-4 rounded-2xl font-semibold text-white btn-3d-primary btn-shimmer text-base"
-            >
-              <Sparkles className="w-5 h-5 text-amber-300 animate-pulse" />
-              Start 3-Step Journey Blueprint
-              <ArrowRight className="w-4 h-4" />
-            </Link>
-            <Link
-              href="/predict"
-              id="hero-predict-btn"
-              className="flex items-center gap-2.5 px-8 py-4 rounded-2xl font-semibold btn-3d-secondary btn-shimmer text-base"
-            >
-              💰 Predict Trip Cost
-            </Link>
-          </motion.div>
-
-          {/* Signature 3D Parallax Hero Scene */}
-          <Hero3DScene />
-        </section>
-
-        {/* ── Stats Section (Scroll Animated Count-Up Numbers) ─ */}
-        <section className="px-6 pb-20">
-          <div className="max-w-4xl mx-auto grid grid-cols-2 md:grid-cols-4 gap-5">
-            {STATS.map(({ target, decimals, prefix, suffix, label, emoji, badge }, i) => (
+          <div className="grid grid-cols-1 lg:grid-cols-12 gap-10 lg:gap-12 items-center">
+            
+            {/* ── Left Column: Oversized Typography & Action Stack (7 cols) ── */}
+            <div className="lg:col-span-7 flex flex-col items-start text-left">
+              
+              {/* Top Badge with Solid Accent */}
               <motion.div
-                key={label}
-                whileInView={{ opacity: 1, y: 0 }}
-                initial={{ opacity: 0, y: 24 }}
-                viewport={{ once: true }}
-                transition={{ duration: 0.45, delay: i * 0.1 }}
+                initial={{ opacity: 0, y: -12 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.5, delay: 0.05 }}
+                className="inline-flex items-center gap-2.5 px-4 py-2 rounded-full bg-white/95 backdrop-blur-md border border-[var(--color-border-mid)] text-xs sm:text-sm font-semibold text-[var(--color-text)] mb-6 shadow-sm"
               >
-                <MagneticCard pullStrength={6} className="card p-6 text-center cursor-default group h-full">
-                  <div className="flex justify-between items-center mb-2">
-                    <span className="text-2xl group-hover:scale-110 transition-transform">{emoji}</span>
-                    <span className="text-[10px] font-bold px-2 py-0.5 rounded-full bg-[#FFF0EB] text-[#E05A36] border border-[#FF9776]/30">
-                      {badge}
-                    </span>
-                  </div>
-                  <p className="font-heading font-900 text-4xl coral-text">
-                    <CountUpNumber target={target} decimals={decimals} prefix={prefix} suffix={suffix} />
-                  </p>
-                  <p className="text-xs text-[var(--color-muted)] mt-1.5 font-semibold leading-tight">{label}</p>
-                </MagneticCard>
+                <Globe className="w-4 h-4 text-[var(--color-coral)]" />
+                <span>Global Travel Cost AI · XGBoost Regressor</span>
+                <span className="badge-solid-coral px-2.5 py-0.5 rounded-full text-[11px]">
+                  ★ R² 0.94
+                </span>
               </motion.div>
-            ))}
+
+              {/* Oversized Display Headline (80-100px scale on desktop) */}
+              <motion.h1
+                initial={{ opacity: 0, y: 24 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.55, delay: 0.15 }}
+                className="font-display font-[900] text-5xl sm:text-7xl lg:text-[5.5rem] xl:text-[6.25rem] leading-[0.92] tracking-super-tight text-[var(--color-text)] mb-6"
+              >
+                Plan Your <br className="hidden sm:inline" />
+                Dream Trip. <br />
+                <span className="headline-accent-underline text-[var(--color-text)]">
+                  Know the Cost.
+                </span> <br />
+                <span className="peach-text">Travel Smarter.</span>
+              </motion.h1>
+
+              {/* Subtext — High Weight Contrast (Light body vs Ultra-Black display) */}
+              <motion.p
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.55, delay: 0.3 }}
+                className="text-base sm:text-lg lg:text-xl text-[var(--color-muted)] max-w-xl leading-relaxed font-normal mb-8"
+              >
+                Instant machine-learning budget predictions across global routes, combined with AI-curated itineraries and 13,000+ top Indian attractions.
+              </motion.p>
+
+              {/* Action Buttons */}
+              <motion.div
+                initial={{ opacity: 0, y: 16 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.55, delay: 0.45 }}
+                className="flex flex-wrap gap-4 items-center"
+              >
+                <Link
+                  href="/discover"
+                  id="hero-start-journey-btn"
+                  className="flex items-center gap-2.5 px-8 py-4 rounded-2xl font-bold text-white btn-3d-primary btn-shimmer text-base shadow-coral"
+                >
+                  <Sparkles className="w-5 h-5 text-amber-300 animate-pulse" />
+                  Start 3-Step Blueprint
+                  <ArrowRight className="w-4 h-4" />
+                </Link>
+                <Link
+                  href="/predict"
+                  id="hero-predict-btn"
+                  className="flex items-center gap-2.5 px-7 py-4 rounded-2xl font-bold btn-3d-secondary btn-shimmer text-base"
+                >
+                  💰 Predict Trip Cost
+                </Link>
+              </motion.div>
+
+              {/* ── High-Density Micro-Stats Strip (Anchored directly under Hero) ── */}
+              <motion.div
+                initial={{ opacity: 0, y: 16 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.55, delay: 0.55 }}
+                className="w-full max-w-2xl mt-10 p-4 sm:p-5 rounded-2xl bg-white/90 backdrop-blur-md border border-[var(--color-border-mid)] shadow-soft grid grid-cols-2 sm:grid-cols-4 gap-4"
+              >
+                {STATS.map(({ target, decimals, prefix, suffix, label, emoji, badge }) => (
+                  <div key={label} className="flex flex-col">
+                    <div className="flex items-center justify-between mb-1">
+                      <span className="text-base">{emoji}</span>
+                      <span className="text-[9px] font-extrabold px-1.5 py-0.5 rounded-md bg-[#FFF0EB] text-[#E05A36] border border-[#FF9776]/30">
+                        {badge}
+                      </span>
+                    </div>
+                    <p className="font-display font-[800] text-2xl text-[var(--color-text)]">
+                      <CountUpNumber target={target} decimals={decimals} prefix={prefix} suffix={suffix} />
+                    </p>
+                    <p className="text-[11px] text-[var(--color-muted)] font-semibold mt-0.5">{label}</p>
+                  </div>
+                ))}
+              </motion.div>
+
+            </div>
+
+            {/* ── Right Column: Visual Stage with Breakout Collage (5 cols) ── */}
+            <div className="lg:col-span-5 relative mt-6 lg:mt-0">
+              <Hero3DScene />
+            </div>
+
           </div>
         </section>
 
@@ -235,24 +246,26 @@ export default function HomePage() {
         {/* ── Visual 4-Step Journey Map ────────────────────── */}
         <JourneyMap />
 
-        {/* ── Feature Cards Section (3D Rotate Entrance) ─────── */}
-        <section className="px-6 md:px-12 pb-24 max-w-6xl mx-auto">
+        {/* ── Feature Cards Section (Asymmetric Bento Grid) ─── */}
+        <section className="px-6 md:px-12 pb-24 max-w-7xl mx-auto">
           <motion.div
             whileInView={{ opacity: 1, y: 0 }}
             initial={{ opacity: 0, y: 20 }}
             viewport={{ once: true }}
             transition={{ duration: 0.5 }}
-            className="text-center mb-12"
+            className="flex flex-col md:flex-row md:items-end justify-between mb-12 gap-4"
           >
-            <span className="inline-block text-xs font-bold tracking-widest uppercase px-3.5 py-1 rounded-full bg-[#FFF0EB] text-[#E05A36] mb-3 border border-[#FF9776]/30">
-              Complete AI Travel Suite
-            </span>
-            <h2 className="font-heading font-700 text-3xl md:text-4xl text-[var(--color-text)] mb-3">
-              Everything you need to{" "}
-              <span className="teal-text">travel smarter</span>
-            </h2>
-            <p className="text-[var(--color-muted)] max-w-md mx-auto font-medium">
-              Three intelligent ML & LLM tools. One seamless experience. Zero guesswork.
+            <div>
+              <span className="badge-solid-coral inline-block text-xs font-extrabold tracking-wider uppercase px-3.5 py-1 rounded-full mb-3">
+                Complete AI Travel Suite
+              </span>
+              <h2 className="font-display font-[800] text-3xl sm:text-5xl text-[var(--color-text)] tracking-tight">
+                Everything you need to{" "}
+                <span className="headline-accent-underline-teal text-[var(--color-text)]">travel smarter</span>
+              </h2>
+            </div>
+            <p className="text-[var(--color-muted)] text-sm sm:text-base max-w-md font-normal leading-relaxed">
+              Three intelligent ML &amp; LLM engines. One unified workspace. Zero guesswork for your next adventure.
             </p>
           </motion.div>
           <FeatureCards />
@@ -261,37 +274,39 @@ export default function HomePage() {
         {/* ── Sample Itinerary Showcase (Phase 5 LLM Output) ──── */}
         <SampleItineraryShowcase />
 
-        {/* ── Bottom CTA Strip (Elevated Soft 3D Box) ───────── */}
+        {/* ── Bottom CTA Strip (Punchy Saturated Midnight-Gradient Box) ── */}
         <section className="px-6 pb-24">
           <motion.div
             whileInView={{ opacity: 1, scale: 1 }}
             initial={{ opacity: 0, scale: 0.95 }}
             viewport={{ once: true }}
             transition={{ duration: 0.5 }}
-            className="max-w-4xl mx-auto rounded-3xl p-12 text-center relative overflow-hidden card"
-            style={{
-              background: "linear-gradient(135deg, #EEECFC 0%, #F4F2FA 40%, #FFF0EB 75%, #E6F8F4 100%)",
-              border: "1.5px solid rgba(108,92,231,0.18)",
-              boxShadow: "0 20px 50px rgba(108,92,231,0.16)",
-            }}
+            className="max-w-5xl mx-auto rounded-3xl p-10 sm:p-14 text-center relative overflow-hidden bg-saturated-midnight text-white border border-indigo-400/30 shadow-2xl"
           >
-            <div className="inline-flex items-center gap-2 px-3.5 py-1 rounded-full bg-white/90 text-xs font-bold text-[var(--color-coral)] mb-4 shadow-xs border border-[var(--color-coral)]/20">
-              ✨ Free Instant AI Prediction
+            {/* Ambient Radial Color Flares */}
+            <div className="absolute -top-24 -right-24 w-96 h-96 rounded-full bg-[#6C5CE7]/35 blur-3xl pointer-events-none" />
+            <div className="absolute -bottom-24 -left-24 w-96 h-96 rounded-full bg-[#00B894]/30 blur-3xl pointer-events-none" />
+            <div className="absolute inset-0 bg-blueprint-grid-dark opacity-15 pointer-events-none" />
+
+            <div className="relative z-10">
+              <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-white/10 backdrop-blur-md text-xs font-extrabold text-[#55EFC4] mb-5 border border-white/15">
+                <Sparkles className="w-3.5 h-3.5 text-amber-300" /> Free Instant ML Estimation
+              </div>
+              <h2 className="font-display font-[900] text-3xl sm:text-5xl text-white tracking-tight mb-4">
+                Ready to plan your next adventure?
+              </h2>
+              <p className="text-indigo-200/80 text-base sm:text-lg mb-8 max-w-xl mx-auto font-normal leading-relaxed">
+                Get an AI-powered cost estimate and custom itinerary with precise budget breakdown in under 60 seconds.
+              </p>
+              <Link
+                href="/predict"
+                id="bottom-predict-btn"
+                className="inline-flex items-center gap-2.5 px-10 py-4 rounded-2xl font-extrabold text-white bg-gradient-to-r from-[#6C5CE7] to-[#00B894] hover:opacity-95 shadow-coral text-base transition-transform duration-200 hover:scale-105"
+              >
+                <Sparkles className="w-5 h-5 text-amber-300 animate-pulse" />
+                Start Predicting — It&apos;s Free
+              </Link>
             </div>
-            <h2 className="font-heading font-800 text-3xl md:text-4xl text-[var(--color-text)] mb-3">
-              Ready to plan your next adventure?
-            </h2>
-            <p className="text-[var(--color-muted)] mb-8 max-w-lg mx-auto font-medium">
-              Get an AI-powered cost estimate and custom itinerary in under 60 seconds.
-            </p>
-            <Link
-              href="/predict"
-              id="bottom-predict-btn"
-              className="inline-flex items-center gap-2.5 px-9 py-4 rounded-2xl font-semibold text-white btn-3d-primary btn-shimmer text-base"
-            >
-              <Sparkles className="w-5 h-5 text-amber-300 animate-pulse" />
-              Start Predicting — It&apos;s Free
-            </Link>
           </motion.div>
         </section>
       </main>

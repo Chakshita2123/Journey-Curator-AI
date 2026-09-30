@@ -57,23 +57,25 @@ export default function ResultCard({ result, destination, duration, onReset }: P
       initial={{ opacity: 0, scale: 0.94 }}
       animate={{ opacity: 1, scale: 1 }}
       transition={{ duration: 0.45 }}
-      className="w-full max-w-xl mx-auto flex flex-col gap-5"
+      className="w-full max-w-3xl mx-auto flex flex-col gap-6"
     >
       {/* ── Main cost card ─────────────────────── */}
-      <div className="card p-8 text-center shadow-coral">
+      <div className="card p-8 sm:p-10 text-center shadow-coral relative overflow-hidden">
+        <div className="h-1.5 w-full absolute top-0 inset-x-0 bg-gradient-to-r from-[#6C5CE7] to-[#00B894]" />
+        
         <p className="text-4xl mb-3 animate-bounce">🎉</p>
-        <p className="text-sm font-medium text-[var(--color-muted)] uppercase tracking-wider mb-1">
-          Estimated Trip Cost
+        <p className="text-xs font-extrabold text-[var(--color-muted)] uppercase tracking-widest mb-1">
+          ML Predicted Trip Budget
         </p>
-        <p className="font-heading font-900 text-6xl coral-text">
+        <p className="font-display font-[900] text-5xl sm:text-7xl coral-text tracking-tight">
           ₹{predicted_cost.toLocaleString("en-IN")}
         </p>
-        <p className="mt-2 text-[var(--color-muted)] text-sm font-medium">
+        <p className="mt-2 text-[var(--color-muted)] text-sm sm:text-base font-semibold">
           {origin ? `From ${origin} to ${destination}` : destination} · {duration} {duration === 1 ? "day" : "days"}
         </p>
 
         {transport_note && (
-          <div className="mt-3 p-2.5 rounded-xl bg-[var(--color-surface-warm)] border border-[rgba(108,92,231,0.12)] text-xs text-[var(--color-muted)] font-medium inline-block">
+          <div className="mt-3.5 p-3 rounded-2xl bg-[var(--color-surface-warm)] border border-[rgba(108,92,231,0.18)] text-xs sm:text-sm text-[var(--color-text)] font-semibold inline-block">
             🛫 {transport_note}
           </div>
         )}
@@ -85,7 +87,7 @@ export default function ResultCard({ result, destination, duration, onReset }: P
           initial={{ opacity: 0, y: 10 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ delay: 0.2 }}
-          className="mt-5 inline-flex items-center gap-2 px-4 py-2 rounded-full text-sm font-semibold shadow-sm"
+          className="mt-6 inline-flex items-center gap-2 px-5 py-2.5 rounded-full text-sm font-extrabold shadow-sm"
           style={
             withinBudget
               ? { background: "var(--color-success-light)", color: "var(--color-success)" }

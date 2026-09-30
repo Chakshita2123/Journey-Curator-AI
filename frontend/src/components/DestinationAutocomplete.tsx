@@ -3,71 +3,98 @@
 import { useState, useEffect, useRef, KeyboardEvent } from "react";
 import { MapPin, Search, X } from "lucide-react";
 
-// ── Curated dataset — 74 destinations + city/state/category/photo ─────────────
+import { getVerifiedDestinationImage } from "@/data/destinationImages";
+
 export interface CuratedDestination {
-  name: string; city: string; state: string; category: string; photo: string;
+  name: string; city: string; state: string; category: string; photo?: string;
 }
 
 const CURATED: CuratedDestination[] = [
   // Uttar Pradesh
-  { name: "Taj Mahal",               city: "Agra",      state: "Uttar Pradesh",   category: "Historic",  photo: "https://images.unsplash.com/photo-1564507592333-c60657eea523?auto=format&fit=crop&w=120&q=60" },
-  { name: "Sarnath",                 city: "Varanasi",  state: "Uttar Pradesh",   category: "Religious", photo: "https://images.unsplash.com/photo-1558618666-fcd25c85cd64?auto=format&fit=crop&w=120&q=60" },
-  { name: "Varanasi Ghats",          city: "Varanasi",  state: "Uttar Pradesh",   category: "Religious", photo: "https://images.unsplash.com/photo-1561361513-2d000a50f0dc?auto=format&fit=crop&w=120&q=60" },
-  { name: "Kashi Vishwanath Temple", city: "Varanasi",  state: "Uttar Pradesh",   category: "Religious", photo: "https://images.unsplash.com/photo-1609340741927-f5d0cd2e3af7?auto=format&fit=crop&w=120&q=60" },
-  { name: "Ramnagar Fort",           city: "Varanasi",  state: "Uttar Pradesh",   category: "Historic",  photo: "https://images.unsplash.com/photo-1587474260584-136574528ed5?auto=format&fit=crop&w=120&q=60" },
-  { name: "Vrindavan",               city: "Mathura",   state: "Uttar Pradesh",   category: "Religious", photo: "https://images.unsplash.com/photo-1609340741927-f5d0cd2e3af7?auto=format&fit=crop&w=120&q=60" },
-  { name: "Mathura",                 city: "Mathura",   state: "Uttar Pradesh",   category: "Religious", photo: "https://images.unsplash.com/photo-1609340741927-f5d0cd2e3af7?auto=format&fit=crop&w=120&q=60" },
+  { name: "Taj Mahal",               city: "Agra",      state: "Uttar Pradesh",   category: "Historic" },
+  { name: "Sarnath",                 city: "Varanasi",  state: "Uttar Pradesh",   category: "Religious" },
+  { name: "Varanasi Ghats",          city: "Varanasi",  state: "Uttar Pradesh",   category: "Religious" },
+  { name: "Kashi Vishwanath Temple", city: "Varanasi",  state: "Uttar Pradesh",   category: "Religious" },
+  { name: "Durgakund Temple",          city: "Varanasi",  state: "Uttar Pradesh",   category: "Religious" },
+  { name: "Ramnagar Fort",           city: "Varanasi",  state: "Uttar Pradesh",   category: "Historic" },
+  { name: "Vrindavan",               city: "Mathura",   state: "Uttar Pradesh",   category: "Religious" },
+  { name: "Mathura",                 city: "Mathura",   state: "Uttar Pradesh",   category: "Religious" },
   // Delhi
-  { name: "India Gate",              city: "New Delhi", state: "Delhi",           category: "Monument",  photo: "https://images.unsplash.com/photo-1587474260584-136574528ed5?auto=format&fit=crop&w=120&q=60" },
-  { name: "Red Fort",                city: "Old Delhi", state: "Delhi",           category: "Historic",  photo: "https://images.unsplash.com/photo-1599420183985-e43e9e00f9ef?auto=format&fit=crop&w=120&q=60" },
-  { name: "Humayun's Tomb",          city: "New Delhi", state: "Delhi",           category: "Historic",  photo: "https://images.unsplash.com/photo-1524492412937-b28074a5d7da?auto=format&fit=crop&w=120&q=60" },
-  { name: "Lotus Temple",            city: "New Delhi", state: "Delhi",           category: "Religious", photo: "https://images.unsplash.com/photo-1585490737634-89ae37f3a2f3?auto=format&fit=crop&w=120&q=60" },
-  { name: "Jantar Mantar",           city: "New Delhi", state: "Delhi",           category: "Historic",  photo: "https://images.unsplash.com/photo-1624461386880-fd0c8e47534b?auto=format&fit=crop&w=120&q=60" },
+  { name: "India Gate",              city: "New Delhi", state: "Delhi",           category: "Monument" },
+  { name: "Red Fort",                city: "Old Delhi", state: "Delhi",           category: "Historic" },
+  { name: "Humayun's Tomb",          city: "New Delhi", state: "Delhi",           category: "Historic" },
+  { name: "Lotus Temple",            city: "New Delhi", state: "Delhi",           category: "Religious" },
+  { name: "Jantar Mantar",           city: "New Delhi", state: "Delhi",           category: "Historic" },
+  { name: "Qutub Minar",             city: "New Delhi", state: "Delhi",           category: "Historic" },
   // Rajasthan
-  { name: "Hawa Mahal",              city: "Jaipur",    state: "Rajasthan",       category: "Historic",  photo: "https://images.unsplash.com/photo-1599661046827-dacff0c0f09a?auto=format&fit=crop&w=120&q=60" },
-  { name: "Amber Fort",              city: "Jaipur",    state: "Rajasthan",       category: "Historic",  photo: "https://images.unsplash.com/photo-1603262110263-fb0112e7cc33?auto=format&fit=crop&w=120&q=60" },
-  { name: "City Palace",             city: "Jaipur",    state: "Rajasthan",       category: "Historic",  photo: "https://images.unsplash.com/photo-1587474260584-136574528ed5?auto=format&fit=crop&w=120&q=60" },
-  { name: "Nahargarh Fort",          city: "Jaipur",    state: "Rajasthan",       category: "Historic",  photo: "https://images.unsplash.com/photo-1610733038069-a862843e9ee6?auto=format&fit=crop&w=120&q=60" },
-  { name: "Jal Mahal",               city: "Jaipur",    state: "Rajasthan",       category: "Historic",  photo: "https://images.unsplash.com/photo-1622397706988-d4c5e37aed46?auto=format&fit=crop&w=120&q=60" },
+  { name: "Hawa Mahal",              city: "Jaipur",    state: "Rajasthan",       category: "Historic" },
+  { name: "Amber Fort",              city: "Jaipur",    state: "Rajasthan",       category: "Historic" },
+  { name: "City Palace",             city: "Jaipur",    state: "Rajasthan",       category: "Historic" },
+  { name: "Nahargarh Fort",          city: "Jaipur",    state: "Rajasthan",       category: "Historic" },
+  { name: "Jal Mahal",               city: "Jaipur",    state: "Rajasthan",       category: "Historic" },
   // Maharashtra
-  { name: "Gateway of India",        city: "Mumbai",    state: "Maharashtra",     category: "Monument",  photo: "https://images.unsplash.com/photo-1529253355930-ddbe423a2ac7?auto=format&fit=crop&w=120&q=60" },
-  { name: "Elephanta Caves",         city: "Mumbai",    state: "Maharashtra",     category: "Historic",  photo: "https://images.unsplash.com/photo-1548013146-72479768bada?auto=format&fit=crop&w=120&q=60" },
-  { name: "Marine Drive",            city: "Mumbai",    state: "Maharashtra",     category: "Natural",   photo: "https://images.unsplash.com/photo-1567157577867-05ccb1388e66?auto=format&fit=crop&w=120&q=60" },
-  { name: "Juhu Beach",              city: "Mumbai",    state: "Maharashtra",     category: "Natural",   photo: "https://images.unsplash.com/photo-1512343879784-a960bf40e7f2?auto=format&fit=crop&w=120&q=60" },
+  { name: "Gateway of India",        city: "Mumbai",    state: "Maharashtra",     category: "Monument" },
+  { name: "Elephanta Caves",         city: "Mumbai",    state: "Maharashtra",     category: "Historic" },
+  { name: "Marine Drive",            city: "Mumbai",    state: "Maharashtra",     category: "Natural" },
+  { name: "Juhu Beach",              city: "Mumbai",    state: "Maharashtra",     category: "Natural" },
+  { name: "Siddhivinayak Temple",    city: "Mumbai",    state: "Maharashtra",     category: "Religious" },
+  { name: "Chhatrapati Shivaji Museum", city: "Mumbai", state: "Maharashtra",     category: "Cultural" },
   // J&K
-  { name: "Dal Lake",                city: "Srinagar",  state: "J&K",             category: "Natural",   photo: "https://images.unsplash.com/photo-1595815771614-ade9d652a65d?auto=format&fit=crop&w=120&q=60" },
-  { name: "Mughal Gardens",          city: "Srinagar",  state: "J&K",             category: "Natural",   photo: "https://images.unsplash.com/photo-1595815771614-ade9d652a65d?auto=format&fit=crop&w=120&q=60" },
-  { name: "Gulmarg Gondola",         city: "Gulmarg",   state: "J&K",             category: "Adventure", photo: "https://images.unsplash.com/photo-1506905925346-21bda4d32df4?auto=format&fit=crop&w=120&q=60" },
+  { name: "Dal Lake",                city: "Srinagar",  state: "J&K",             category: "Natural" },
+  { name: "Mughal Gardens",          city: "Srinagar",  state: "J&K",             category: "Natural" },
+  { name: "Hazratbal Shrine",        city: "Srinagar",  state: "J&K",             category: "Religious" },
+  { name: "Shankaracharya Temple",   city: "Srinagar",  state: "J&K",             category: "Religious" },
+  { name: "Pari Mahal",              city: "Srinagar",  state: "J&K",             category: "Historic" },
+  { name: "Gulmarg Gondola",         city: "Gulmarg",   state: "J&K",             category: "Adventure" },
   // Himachal Pradesh
-  { name: "Hadimba Temple",          city: "Manali",    state: "Himachal Pradesh",category: "Religious", photo: "https://images.unsplash.com/photo-1506905925346-21bda4d32df4?auto=format&fit=crop&w=120&q=60" },
-  { name: "Solang Valley",           city: "Manali",    state: "Himachal Pradesh",category: "Adventure", photo: "https://images.unsplash.com/photo-1551632811-561732d1e306?auto=format&fit=crop&w=120&q=60" },
-  { name: "Rohtang Pass",            city: "Manali",    state: "Himachal Pradesh",category: "Adventure", photo: "https://images.unsplash.com/photo-1464822759023-fed622ff2c3b?auto=format&fit=crop&w=120&q=60" },
-  { name: "Old Manali",              city: "Manali",    state: "Himachal Pradesh",category: "Cultural",  photo: "https://images.unsplash.com/photo-1506905925346-21bda4d32df4?auto=format&fit=crop&w=120&q=60" },
+  { name: "Hadimba Temple",          city: "Manali",    state: "Himachal Pradesh",category: "Religious" },
+  { name: "Beas River",              city: "Manali",    state: "Himachal Pradesh",category: "Natural" },
+  { name: "Solang Valley",           city: "Manali",    state: "Himachal Pradesh",category: "Adventure" },
+  { name: "Rohtang Pass",            city: "Manali",    state: "Himachal Pradesh",category: "Adventure" },
+  { name: "Old Manali",              city: "Manali",    state: "Himachal Pradesh",category: "Cultural" },
   // West Bengal
-  { name: "Victoria Memorial",       city: "Kolkata",   state: "West Bengal",     category: "Monument",  photo: "https://images.unsplash.com/photo-1558431382-27e303142255?auto=format&fit=crop&w=120&q=60" },
-  { name: "Howrah Bridge",           city: "Kolkata",   state: "West Bengal",     category: "Monument",  photo: "https://images.unsplash.com/photo-1558431382-27e303142255?auto=format&fit=crop&w=120&q=60" },
-  { name: "Sundarbans",              city: "South 24 Parganas", state: "West Bengal", category: "Natural", photo: "https://images.unsplash.com/photo-1441974231531-c6227db76b6e?auto=format&fit=crop&w=120&q=60" },
+  { name: "Victoria Memorial",       city: "Kolkata",   state: "West Bengal",     category: "Monument" },
+  { name: "Howrah Bridge",           city: "Kolkata",   state: "West Bengal",     category: "Monument" },
+  { name: "Indian Museum",           city: "Kolkata",   state: "West Bengal",     category: "Cultural" },
+  { name: "Science City",            city: "Kolkata",   state: "West Bengal",     category: "Cultural" },
+  { name: "Dakshineswar Kali Temple", city: "Kolkata",  state: "West Bengal",     category: "Religious" },
+  { name: "Sundarbans",              city: "South 24 Parganas", state: "West Bengal", category: "Natural" },
   // Telangana
-  { name: "Charminar",               city: "Hyderabad", state: "Telangana",       category: "Historic",  photo: "https://images.unsplash.com/photo-1548195667-1f6a4e1dc46f?auto=format&fit=crop&w=120&q=60" },
-  { name: "Golconda Fort",           city: "Hyderabad", state: "Telangana",       category: "Historic",  photo: "https://images.unsplash.com/photo-1548195667-1f6a4e1dc46f?auto=format&fit=crop&w=120&q=60" },
-  { name: "Ramoji Film City",        city: "Hyderabad", state: "Telangana",       category: "Cultural",  photo: "https://images.unsplash.com/photo-1536440136628-849c177e76a1?auto=format&fit=crop&w=120&q=60" },
+  { name: "Charminar",               city: "Hyderabad", state: "Telangana",       category: "Historic" },
+  { name: "Golconda Fort",           city: "Hyderabad", state: "Telangana",       category: "Historic" },
+  { name: "Ramoji Film City",        city: "Hyderabad", state: "Telangana",       category: "Cultural" },
+  { name: "Salar Jung Museum",       city: "Hyderabad", state: "Telangana",       category: "Cultural" },
+  { name: "Birla Mandir",            city: "Hyderabad", state: "Telangana",       category: "Religious" },
   // Punjab
-  { name: "Golden Temple",           city: "Amritsar",  state: "Punjab",          category: "Religious", photo: "https://images.unsplash.com/photo-1514222709107-a180c68d72b4?auto=format&fit=crop&w=120&q=60" },
-  { name: "Wagah Border",            city: "Amritsar",  state: "Punjab",          category: "Cultural",  photo: "https://images.unsplash.com/photo-1514222709107-a180c68d72b4?auto=format&fit=crop&w=120&q=60" },
-  { name: "Jallianwala Bagh",        city: "Amritsar",  state: "Punjab",          category: "Historic",  photo: "https://images.unsplash.com/photo-1514222709107-a180c68d72b4?auto=format&fit=crop&w=120&q=60" },
+  { name: "Golden Temple",           city: "Amritsar",  state: "Punjab",          category: "Religious" },
+  { name: "Wagah Border",            city: "Amritsar",  state: "Punjab",          category: "Cultural" },
+  { name: "Jallianwala Bagh",        city: "Amritsar",  state: "Punjab",          category: "Historic" },
+  { name: "Durgiana Temple",         city: "Amritsar",  state: "Punjab",          category: "Religious" },
+  { name: "Partition Museum",        city: "Amritsar",  state: "Punjab",          category: "Cultural" },
   // Karnataka
-  { name: "Mysore Palace",           city: "Mysore",    state: "Karnataka",       category: "Historic",  photo: "https://images.unsplash.com/photo-1580060839134-75a5edca2e99?auto=format&fit=crop&w=120&q=60" },
-  { name: "Chamundi Hill",           city: "Mysore",    state: "Karnataka",       category: "Religious", photo: "https://images.unsplash.com/photo-1580060839134-75a5edca2e99?auto=format&fit=crop&w=120&q=60" },
-  { name: "Brindavan Gardens",       city: "Mysore",    state: "Karnataka",       category: "Natural",   photo: "https://images.unsplash.com/photo-1558618666-fcd25c85cd64?auto=format&fit=crop&w=120&q=60" },
+  { name: "Mysore Palace",           city: "Mysore",    state: "Karnataka",       category: "Historic" },
+  { name: "Chamundi Hill",           city: "Mysore",    state: "Karnataka",       category: "Religious" },
+  { name: "Mysore Zoo",              city: "Mysore",    state: "Karnataka",       category: "Natural" },
+  { name: "Karanji Lake",            city: "Mysore",    state: "Karnataka",       category: "Natural" },
+  { name: "Brindavan Gardens",       city: "Mysore",    state: "Karnataka",       category: "Natural" },
+  { name: "St. Philomena's Church",  city: "Mysore",    state: "Karnataka",       category: "Religious" },
   // Kerala
-  { name: "Backwaters",              city: "Alleppey",  state: "Kerala",          category: "Natural",   photo: "https://images.unsplash.com/photo-1602216056096-3b40cc0c9944?auto=format&fit=crop&w=120&q=60" },
-  { name: "Alappuzha Beach",         city: "Alleppey",  state: "Kerala",          category: "Natural",   photo: "https://images.unsplash.com/photo-1602216056096-3b40cc0c9944?auto=format&fit=crop&w=120&q=60" },
-  { name: "Marari Beach",            city: "Alleppey",  state: "Kerala",          category: "Resort",    photo: "https://images.unsplash.com/photo-1507525428034-b723cf961d3e?auto=format&fit=crop&w=120&q=60" },
+  { name: "Backwaters",              city: "Alleppey",  state: "Kerala",          category: "Natural" },
+  { name: "Alappuzha Beach",         city: "Alleppey",  state: "Kerala",          category: "Natural" },
+  { name: "Marari Beach",            city: "Alleppey",  state: "Kerala",          category: "Resort" },
+  { name: "Krishnapuram Palace",     city: "Alleppey",  state: "Kerala",          category: "Historic" },
   // Tamil Nadu
-  { name: "Meenakshi Temple",        city: "Madurai",   state: "Tamil Nadu",      category: "Religious", photo: "https://images.unsplash.com/photo-1648470074665-571c1b62ba55?auto=format&fit=crop&w=120&q=60" },
-  { name: "Ooty Lake",               city: "Ooty",      state: "Tamil Nadu",      category: "Natural",   photo: "https://images.unsplash.com/photo-1439853949212-36589f9f8b7c?auto=format&fit=crop&w=120&q=60" },
-  { name: "Doddabetta Peak",         city: "Ooty",      state: "Tamil Nadu",      category: "Natural",   photo: "https://images.unsplash.com/photo-1464822759023-fed622ff2c3b?auto=format&fit=crop&w=120&q=60" },
-  { name: "Ooty Toy Train",          city: "Ooty",      state: "Tamil Nadu",      category: "Cultural",  photo: "https://images.unsplash.com/photo-1464822759023-fed622ff2c3b?auto=format&fit=crop&w=120&q=60" },
+  { name: "Meenakshi Temple",        city: "Madurai",   state: "Tamil Nadu",      category: "Religious" },
+  { name: "Gandhi Museum",           city: "Madurai",   state: "Tamil Nadu",      category: "Cultural" },
+  { name: "Samanar Hills",           city: "Madurai",   state: "Tamil Nadu",      category: "Natural" },
+  { name: "Thirumalai Nayakkar Palace", city: "Madurai", state: "Tamil Nadu",     category: "Historic" },
+  { name: "Koodal Azhagar Temple",   city: "Madurai",   state: "Tamil Nadu",      category: "Religious" },
+  { name: "Ooty Lake",               city: "Ooty",      state: "Tamil Nadu",      category: "Natural" },
+  { name: "Doddabetta Peak",         city: "Ooty",      state: "Tamil Nadu",      category: "Natural" },
+  { name: "Rose Garden",             city: "Ooty",      state: "Tamil Nadu",      category: "Natural" },
+  { name: "Botanical Garden",        city: "Ooty",      state: "Tamil Nadu",      category: "Natural" },
+  { name: "Emerald Lake",            city: "Ooty",      state: "Tamil Nadu",      category: "Natural" },
+  { name: "Ooty Toy Train",          city: "Ooty",      state: "Tamil Nadu",      category: "Cultural" },
 ];
 
 // ── Extended Indian cities/tourist spots for generic fallback ─────────────────
@@ -128,7 +155,7 @@ function getSuggestions(query: string): AutocompleteSuggestion[] {
     .map(({ dest }): AutocompleteSuggestion => ({
       label: dest.name,
       sublabel: `${dest.city}, ${dest.state}`,
-      photo: dest.photo,
+      photo: getVerifiedDestinationImage(dest.name, dest.category),
       category: dest.category,
       isCurated: true,
     }));
@@ -144,7 +171,12 @@ function getSuggestions(query: string): AutocompleteSuggestion[] {
           return !curatedNames.has(c) && (c.includes(ql) || ql.includes(c.substring(0, 3)));
         })
         .slice(0, remaining)
-        .map((city) => ({ label: city, sublabel: "India", isCurated: false }))
+        .map((city) => ({
+          label: city,
+          sublabel: "India",
+          photo: getVerifiedDestinationImage(city),
+          isCurated: false,
+        }))
     : [];
 
   return [...curatedMatches, ...genericMatches];

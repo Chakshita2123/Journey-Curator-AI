@@ -18,25 +18,25 @@ export function JourneyBreadcrumb({ currentStep }: { currentStep: 1 | 2 | 3 }) {
   const { journey } = useUserJourney();
 
   return (
-    <div className="max-w-4xl mx-auto mb-8 px-4">
+    <div className="max-w-3xl mx-auto mb-10 px-2 sm:px-0">
       {/* Top Banner Status */}
-      <div className="flex flex-col sm:flex-row items-center justify-between gap-3 mb-4 pb-3 border-b border-[var(--color-border)]">
+      <div className="flex flex-col sm:flex-row items-center justify-between gap-3 mb-6 pb-4 border-b border-[var(--color-border)]">
         <div className="flex items-center gap-2 text-xs font-bold uppercase tracking-widest text-[var(--color-muted)]">
-          <span className="px-2.5 py-0.5 rounded-full bg-[var(--color-coral-light)] text-[var(--color-coral)]">
-            Step {currentStep} of 3
+          <span className="badge-solid-coral px-3 py-0.5 rounded-full text-[11px]">
+            Step 0{currentStep} of 03
           </span>
-          <span>· Connected Travel Journey</span>
+          <span className="text-[var(--color-text)] font-extrabold">· Connected Journey Flow</span>
         </div>
 
         {/* Saved Session Info Badges */}
         <div className="flex items-center gap-2 text-xs flex-wrap justify-center">
           {journey.selectedDestination && (
-            <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-[#EEECFC] text-[#6C5CE7] font-bold border border-[#6C5CE7]/20 shadow-xs">
+            <span className="inline-flex items-center gap-1.5 px-3.5 py-1 rounded-full bg-[#EEECFC] text-[#6C5CE7] font-extrabold border border-[#6C5CE7]/25 shadow-xs">
               📍 {journey.selectedDestination}
             </span>
           )}
           {journey.tripCost && (
-            <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-[var(--color-teal-light)] text-[var(--color-teal-dark)] font-bold border border-[var(--color-teal)]/20 shadow-xs">
+            <span className="inline-flex items-center gap-1.5 px-3.5 py-1 rounded-full bg-[#E6F8F4] text-[#008F73] font-extrabold border border-[#00B894]/30 shadow-xs">
               💰 ₹{journey.tripCost.predicted_cost.toLocaleString("en-IN")}
             </span>
           )}
@@ -44,7 +44,7 @@ export function JourneyBreadcrumb({ currentStep }: { currentStep: 1 | 2 | 3 }) {
       </div>
 
       {/* Visual Connecting Stepper Line */}
-      <div className="grid grid-cols-3 gap-3 relative max-w-2xl mx-auto">
+      <div className="grid grid-cols-3 gap-3 relative max-w-xl mx-auto">
         {STEPS_DATA.map(({ step, title, href }) => {
           const isDone = step < currentStep;
           const isActive = step === currentStep;
@@ -52,20 +52,20 @@ export function JourneyBreadcrumb({ currentStep }: { currentStep: 1 | 2 | 3 }) {
           return (
             <Link key={step} href={href} className="group flex flex-col items-center text-center">
               <div
-                className={`w-9 h-9 rounded-full flex items-center justify-center font-bold text-xs transition-all duration-300 ${
+                className={`w-11 h-11 rounded-2xl flex items-center justify-center font-bold text-xs transition-all duration-300 ${
                   isActive
-                    ? "coral-gradient text-white scale-110 shadow-coral ring-4 ring-[var(--color-coral-light)]"
+                    ? "coral-gradient text-white scale-110 shadow-coral ring-4 ring-[#6C5CE7]/20 font-extrabold"
                     : isDone
                     ? "bg-[var(--color-teal)] text-white shadow-teal"
                     : "bg-white border-2 border-[var(--color-border-mid)] text-[var(--color-muted)] group-hover:border-[var(--color-coral)]"
                 }`}
               >
-                {isDone ? <CheckCircle2 className="w-4 h-4" /> : step}
+                {isDone ? <CheckCircle2 className="w-5 h-5" /> : `0${step}`}
               </div>
               <span
-                className={`mt-1.5 text-xs font-semibold transition-colors ${
+                className={`mt-2 text-xs font-bold font-display tracking-tight transition-colors ${
                   isActive
-                    ? "text-[var(--color-coral)] font-bold"
+                    ? "text-[var(--color-coral)] font-extrabold"
                     : isDone
                     ? "text-[var(--color-teal-dark)]"
                     : "text-[var(--color-muted)] group-hover:text-[var(--color-text)]"
@@ -90,16 +90,18 @@ export function JourneyNextStep({ currentStep }: { currentStep: 1 | 2 | 3 }) {
   const nextStepData = {
     1: {
       stepNum: 2,
-      title: "Step 2: Generate Day-by-Day Itinerary 🗺️",
+      badge: "Next Step 02",
+      title: "Generate Day-by-Day Itinerary 🗺️",
       desc: journey.selectedDestination
-        ? `Generate a full AI itinerary for your selected destination: ${journey.selectedDestination}.`
+        ? `Generate a tailored AI itinerary for your selected destination: ${journey.selectedDestination}.`
         : "Generate a custom day-by-day itinerary with daily routes & weather notes.",
       href: "/itinerary",
       btnText: journey.selectedDestination ? `Generate Itinerary for ${journey.selectedDestination}` : "Continue to AI Itinerary",
     },
     2: {
       stepNum: 3,
-      title: "Step 3: Predict & Optimize Trip Cost 💰",
+      badge: "Next Step 03",
+      title: "Predict & Optimize Trip Cost 💰",
       desc: journey.selectedDestination
         ? `Calculate total estimated cost and check budget for your trip to ${journey.selectedDestination}.`
         : "Predict trip cost with XGBoost ML model and get budget optimization tips.",
@@ -108,15 +110,17 @@ export function JourneyNextStep({ currentStep }: { currentStep: 1 | 2 | 3 }) {
     },
     3: {
       stepNum: 1,
+      badge: "✨ Full Journey Complete",
       title: "Journey Complete! Plan Another Trip 🎉",
-      desc: "Explore more top destinations or create another custom travel itinerary.",
+      desc: "You've successfully explored destinations, generated custom itineraries, and predicted trip costs. Ready for your next route?",
       href: "/discover",
       btnText: "Explore More Destinations",
     },
   }[currentStep];
 
-  // Defensive: if currentStep is out of range, render nothing instead of crashing
   if (!nextStepData) return null;
+
+  const isComplete = currentStep === 3;
 
   return (
     <motion.section
@@ -124,36 +128,67 @@ export function JourneyNextStep({ currentStep }: { currentStep: 1 | 2 | 3 }) {
       initial={{ opacity: 0, y: 20 }}
       viewport={{ once: true }}
       transition={{ duration: 0.45 }}
-      className="mt-12 max-w-2xl mx-auto px-4"
+      className="mt-14 max-w-3xl mx-auto px-2 sm:px-0"
     >
       <div
-        className="card p-7 text-center relative overflow-hidden"
-        style={{
-          background: "linear-gradient(135deg, #EEECFC 0%, #F4F2FA 50%, #FFF0EB 100%)",
-          border: "1.5px solid rgba(108,92,231,0.18)",
-          boxShadow: "0 12px 32px rgba(108,92,231,0.10)",
-        }}
+        className={`rounded-3xl p-8 sm:p-12 text-center relative overflow-hidden shadow-2xl transition-all ${
+          isComplete
+            ? "bg-[#0D0A24] text-white border border-indigo-500/30"
+            : "bg-white text-[var(--color-text)] border border-[var(--color-border-mid)] shadow-lg"
+        }`}
       >
-        <span className="inline-block text-xs font-bold uppercase tracking-wider px-3 py-1 rounded-full bg-white text-[var(--color-coral)] border border-[var(--color-coral)]/20 mb-3 shadow-xs">
-          Next Step in Your Journey
-        </span>
+        {/* Background Decorative Pattern & Radiant Ambient Glow for Complete State */}
+        {isComplete && (
+          <>
+            <div className="absolute inset-0 bg-blueprint-grid-dark opacity-15 pointer-events-none" />
+            <div className="absolute -top-24 -right-24 w-80 h-80 rounded-full bg-[#6C5CE7]/30 blur-3xl pointer-events-none" />
+            <div className="absolute -bottom-24 -left-24 w-80 h-80 rounded-full bg-[#00B894]/25 blur-3xl pointer-events-none" />
+          </>
+        )}
 
-        <h3 className="font-heading font-700 text-xl text-[var(--color-text)] mb-1">
-          {nextStepData.title}
-        </h3>
-        <p className="text-sm text-[var(--color-muted)] mb-5 leading-relaxed font-medium">
-          {nextStepData.desc}
-        </p>
+        <div className="relative z-10 flex flex-col items-center">
+          {/* Badge */}
+          <div className="mb-4">
+            <span
+              className={`inline-flex items-center gap-1.5 text-xs font-extrabold uppercase tracking-wider px-4 py-1.5 rounded-full shadow-sm ${
+                isComplete
+                  ? "badge-solid-coral"
+                  : "bg-[var(--color-coral-light)] text-[var(--color-coral)] border border-[var(--color-coral)]/20"
+              }`}
+            >
+              {nextStepData.badge}
+            </span>
+          </div>
 
-        <Link
-          href={nextStepData.href}
-          id={`next-step-btn-${currentStep}`}
-          className="inline-flex items-center gap-2.5 px-7 py-3.5 rounded-2xl font-semibold text-white btn-3d-primary btn-shimmer"
-        >
-          <Sparkles className="w-4 h-4 text-amber-300" />
-          {nextStepData.btnText}
-          <ArrowRight className="w-4 h-4" />
-        </Link>
+          {/* Heading — High Contrast & No Overlap */}
+          <h3
+            className={`font-display font-[900] text-2xl sm:text-4xl tracking-tight leading-snug mb-3 ${
+              isComplete ? "text-white" : "text-[var(--color-text)]"
+            }`}
+          >
+            {nextStepData.title}
+          </h3>
+          
+          {/* Subtext — High Contrast & Readable */}
+          <p
+            className={`text-sm sm:text-base mb-8 leading-relaxed font-normal max-w-xl mx-auto ${
+              isComplete ? "text-white/90" : "text-[var(--color-muted)]"
+            }`}
+          >
+            {nextStepData.desc}
+          </p>
+
+          {/* CTA Action Button */}
+          <Link
+            href={nextStepData.href}
+            id={`next-step-btn-${currentStep}`}
+            className="inline-flex items-center gap-2.5 px-9 py-4 rounded-2xl font-extrabold text-white bg-gradient-to-r from-[#6C5CE7] to-[#00B894] hover:opacity-95 shadow-coral text-base hover:scale-105 transition-transform"
+          >
+            <Sparkles className="w-4 h-4 text-amber-300" />
+            <span>{nextStepData.btnText}</span>
+            <ArrowRight className="w-4 h-4" />
+          </Link>
+        </div>
       </div>
     </motion.section>
   );

@@ -1,33 +1,36 @@
-/* ── Fonts — must precede all other rules ────────────────── */
-@import url("https://fonts.googleapis.com/css2?family=Poppins:wght@600;700;800;900&family=Inter:wght@400;500;600&display=swap");
+/* ── Fonts — Display & Editorial Typography ────────────────── */
+@import url("https://api.fontshare.com/v2/css?f[]=clash-display@200,300,400,500,600,700&f[]=cabinet-grotesk@100,200,300,400,500,700,800,900&f[]=general-sans@200,300,400,500,600,700&display=swap");
+@import url("https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,400..800&family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&display=swap");
 
 @import "tailwindcss";
 
 /* ── Design tokens ───────────────────────────────────────── */
 @theme {
-  /* Fonts */
-  --font-heading: "Poppins", ui-sans-serif, system-ui, sans-serif;
-  --font-body:    "Inter",   ui-sans-serif, system-ui, sans-serif;
-  --font-sans:    "Inter",   ui-sans-serif, system-ui, sans-serif;
+  /* Bold Distinctive Display Fonts */
+  --font-heading: "Clash Display", "Cabinet Grotesk", "Bricolage Grotesque", -apple-system, BlinkMacSystemFont, sans-serif;
+  --font-body:    "Plus Jakarta Sans", "General Sans", "Inter", ui-sans-serif, system-ui, sans-serif;
+  --font-sans:    "Plus Jakarta Sans", "General Sans", "Inter", ui-sans-serif, system-ui, sans-serif;
 
   /* ── Background & surface ────────────────────────────────── */
-  --color-bg:          #F4F2FA;   /* subtle lavender-grey canvas */
+  --color-bg:          #F5F3FB;   /* refined lavender-grey canvas */
   --color-surface:     #FFFFFF;   /* card faces: pure white */
-  --color-surface-warm:#EEECFA;   /* soft indigo-tinted surface for panels */
+  --color-surface-warm:#EEEAFC;   /* soft indigo-tinted surface for panels */
   --color-surface-teal:#E6F8F4;   /* soft emerald-teal surface for info panels */
-  --color-border:      rgba(45, 42, 74, 0.08); /* clean indigo-tinted border */
-  --color-border-mid:  rgba(45, 42, 74, 0.14);
+  --color-surface-dark:#110E26;   /* bold saturated midnight dark surface */
+  --color-border:      rgba(45, 42, 74, 0.09); /* clean indigo-tinted border */
+  --color-border-mid:  rgba(45, 42, 74, 0.16);
+  --color-border-dark: rgba(255, 255, 255, 0.12);
 
   /* ── Headings / Primary text ─────────────────────────────── */
-  --color-text:        #2D2A4A;   /* deep indigo heading & primary text */
-  --color-muted:       #6E6B8E;   /* refined slate-indigo muted text */
-  --color-muted-light: #B0ADCA;   /* subtle placeholder / disabled */
+  --color-text:        #1A1636;   /* deep, assertive indigo heading & primary text */
+  --color-muted:       #5E5A80;   /* refined slate-indigo muted text (readable & crisp) */
+  --color-muted-light: #9B97BA;   /* subtle placeholder / disabled */
 
-  /* ── Primary Accent — Indigo-Violet (#6C5CE7) ────────────── */
+  /* ── Primary Accent — Electric Indigo-Violet (#6C5CE7) ───── */
   --color-coral:       #6C5CE7;   /* primary accent: confident indigo-violet */
-  --color-coral-dark:  #5A4BD1;   /* deeper indigo-violet for hover/pressed */
-  --color-coral-light: #EEECFC;   /* pale indigo-violet for active bg & badges */
-  --color-coral-mid:   #A29BFE;   /* mid indigo-violet for hover borders */
+  --color-coral-dark:  #4F3FC6;   /* deeper indigo-violet for hover/pressed */
+  --color-coral-light: #EEEBFF;   /* pale indigo-violet for active bg & badges */
+  --color-coral-mid:   #9C92F8;   /* mid indigo-violet for hover borders */
 
   /* ── Secondary Accent — Emerald Teal (#00B894) ──────────── */
   --color-teal:        #00B894;   /* secondary accent: emerald teal */
@@ -35,17 +38,18 @@
   --color-teal-light:  #E6F8F4;   /* pale emerald teal for info panels */
   --color-teal-mid:    #55EFC4;   /* mid teal for dividers */
 
-  /* ── 3rd Accent — Warm Peach/Sunset Coral (#FF9776) ─────── */
-  --color-peach:       #FF9776;   /* warm sunset peach for highlights */
-  --color-peach-dark:  #E05A36;   /* dark peach text */
-  --color-peach-light: #FFF0EB;   /* pale peach tint for badges */
+  /* ── 3rd Accent — High-Contrast Electric Coral/Orange ────── */
+  --color-peach:       #FF5E36;   /* punchy electric sunset coral */
+  --color-peach-dark:  #D93810;   /* deep punchy orange */
+  --color-peach-light: #FFF0EB;   /* pale coral tint */
+  --color-orange-bold: #FF5500;   /* high-visibility punch */
 
   /* ── Highlights & badges ───────────────────────────────── */
   --color-yellow:      #00B894;
   --color-yellow-light:#E6F8F4;
 
   /* ── Success states ─────────────────────────────────────── */
-  --color-success:     #00B894;   /* emerald teal */
+  --color-success:     #00B894;
   --color-success-light:#E6F8F4;
 
   /* ── Warning / danger ───────────────────────────────────── */
@@ -71,11 +75,27 @@ body {
 }
 
 /* ── Typography utilities ────────────────────────────────── */
-.font-heading { font-family: var(--font-heading); }
+.font-heading {
+  font-family: var(--font-heading);
+  letter-spacing: -0.03em;
+}
+
+.font-display {
+  font-family: "Clash Display", "Cabinet Grotesk", sans-serif;
+  letter-spacing: -0.04em;
+}
+
+.tracking-editorial {
+  letter-spacing: -0.045em;
+}
+
+.tracking-super-tight {
+  letter-spacing: -0.055em;
+}
 
 /* ── Primary gradient text (indigo-violet) ───────────────── */
 .coral-text {
-  background: linear-gradient(135deg, #2D2A4A, #6C5CE7);
+  background: linear-gradient(135deg, #1A1636 0%, #6C5CE7 100%);
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
   background-clip: text;
@@ -89,17 +109,17 @@ body {
   background-clip: text;
 }
 
-/* ── Peach gradient text (3rd accent) ────────────────────── */
+/* ── Peach / Electric Coral gradient text ────────────────── */
 .peach-text {
-  background: linear-gradient(135deg, #E05A36, #FF9776);
+  background: linear-gradient(135deg, #E03A14, #FF5E36);
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
   background-clip: text;
 }
 
-/* ── Accent gradients ────────────────────────────────────── */
+/* ── High-Contrast Saturated Gradients ───────────────────── */
 .coral-gradient {
-  background: linear-gradient(135deg, #5A4BD1, #6C5CE7);
+  background: linear-gradient(135deg, #4F3FC6, #6C5CE7);
 }
 
 .teal-gradient {
@@ -107,14 +127,105 @@ body {
 }
 
 .peach-gradient {
-  background: linear-gradient(135deg, #FF6B4A, #FF9776);
+  background: linear-gradient(135deg, #FF3D14, #FF7B59);
+}
+
+.bg-saturated-midnight {
+  background: linear-gradient(140deg, #0D0A21 0%, #17123A 45%, #251854 100%);
+}
+
+.bg-saturated-punch {
+  background: linear-gradient(135deg, #4F3FC6 0%, #6C5CE7 40%, #00B894 100%);
+}
+
+/* ── Solid High-Contrast Editorial Badges ────────────────── */
+.badge-solid-coral {
+  background-color: #FF5E36;
+  color: #FFFFFF;
+  font-weight: 800;
+  letter-spacing: -0.01em;
+  box-shadow: 0 4px 14px rgba(255, 94, 54, 0.35);
+}
+
+.badge-solid-dark {
+  background-color: #1A1636;
+  color: #FFFFFF;
+  font-weight: 700;
+  box-shadow: 0 4px 14px rgba(26, 22, 54, 0.25);
+}
+
+.badge-solid-teal {
+  background-color: #00B894;
+  color: #082820;
+  font-weight: 800;
+  box-shadow: 0 4px 14px rgba(0, 184, 148, 0.3);
+}
+
+/* ── Custom Graphic & Background Dot-Matrix Patterns ──────── */
+.bg-blueprint-grid {
+  background-image: radial-gradient(rgba(108, 92, 231, 0.18) 1.5px, transparent 1.5px);
+  background-size: 24px 24px;
+}
+
+.bg-blueprint-grid-dark {
+  background-image: radial-gradient(rgba(255, 255, 255, 0.15) 1.2px, transparent 1.2px);
+  background-size: 20px 20px;
+}
+
+.bg-subtle-lines {
+  background-image: repeating-linear-gradient(
+    45deg,
+    rgba(108, 92, 231, 0.03),
+    rgba(108, 92, 231, 0.03) 10px,
+    transparent 10px,
+    transparent 20px
+  );
+}
+
+/* ── Bold Headline Underline Accent ──────────────────────── */
+.headline-accent-underline {
+  position: relative;
+  display: inline-block;
+  white-space: nowrap;
+}
+.headline-accent-underline::after {
+  content: '';
+  position: absolute;
+  left: 0;
+  bottom: 4px;
+  width: 100%;
+  height: 12px;
+  background: #FF5E36;
+  opacity: 0.85;
+  z-index: -1;
+  transform: rotate(-1deg);
+  border-radius: 4px;
+}
+
+.headline-accent-underline-teal {
+  position: relative;
+  display: inline-block;
+  white-space: nowrap;
+}
+.headline-accent-underline-teal::after {
+  content: '';
+  position: absolute;
+  left: 0;
+  bottom: 4px;
+  width: 100%;
+  height: 12px;
+  background: #00B894;
+  opacity: 0.85;
+  z-index: -1;
+  transform: rotate(0.8deg);
+  border-radius: 4px;
 }
 
 /* ── Card / surface — Elevated Feel ──────────────────────── */
 .card {
   background: var(--color-surface);
   border: 1px solid rgba(108, 92, 231, 0.10);
-  border-radius: 20px;
+  border-radius: 24px;
   box-shadow: 0 10px 30px rgba(45, 42, 74, 0.07), 0 2px 8px rgba(45, 42, 74, 0.04);
   transition: transform 0.25s cubic-bezier(0.22, 1, 0.36, 1), box-shadow 0.25s ease, border-color 0.25s ease;
 }
@@ -125,17 +236,24 @@ body {
   border-color: rgba(108, 92, 231, 0.22);
 }
 
+.card-dark {
+  background: var(--color-surface-dark);
+  border: 1px solid rgba(255, 255, 255, 0.14);
+  border-radius: 24px;
+  box-shadow: 0 20px 50px rgba(13, 10, 33, 0.4), 0 4px 16px rgba(0, 0, 0, 0.3);
+}
+
 .card-warm {
   background: var(--color-surface-warm);
   border: 1px solid rgba(108, 92, 231, 0.14);
-  border-radius: 20px;
+  border-radius: 24px;
 }
 
 /* ── Soft shadows ────────────────────────────────────────── */
 .shadow-soft  { box-shadow: 0 8px 28px rgba(45, 42, 74, 0.08); }
 .shadow-coral { box-shadow: 0 10px 30px rgba(108, 92, 231, 0.26); }
 .shadow-teal  { box-shadow: 0 10px 30px rgba(0, 184, 148, 0.22); }
-.shadow-peach { box-shadow: 0 10px 30px rgba(255, 151, 118, 0.25); }
+.shadow-peach { box-shadow: 0 10px 30px rgba(255, 94, 54, 0.30); }
 
 /* ── Soft-3D Raised Pill Buttons ─────────────────────────── */
 .btn-3d-primary {
