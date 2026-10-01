@@ -9,6 +9,7 @@ interface AuthModalProps {
   onSuccess: () => void;
   defaultTab?: "signin" | "signup";
   triggerMessage?: string; // e.g. "Sign in to save this trip"
+  callbackUrl?: string;
 }
 
 export default function AuthModal({
@@ -16,6 +17,7 @@ export default function AuthModal({
   onSuccess,
   defaultTab = "signin",
   triggerMessage,
+  callbackUrl,
 }: AuthModalProps) {
   const [tab, setTab] = useState<"signin" | "signup">(defaultTab);
   const [name, setName] = useState("");
@@ -31,6 +33,16 @@ export default function AuthModal({
     setSuccessMsg(null);
   };
 
+  const handleSuccessRedirect = (delayMs = 500) => {
+    setTimeout(() => {
+      if (callbackUrl) {
+        window.location.href = callbackUrl;
+      } else {
+        onSuccess();
+      }
+    }, delayMs);
+  };
+
   async function handleSignIn(e: React.FormEvent) {
     e.preventDefault();
     reset();
@@ -44,8 +56,8 @@ export default function AuthModal({
       if (result?.error) {
         setError("Incorrect email or password. Please try again.");
       } else {
-        setSuccessMsg("Signed in!");
-        setTimeout(onSuccess, 500);
+        setSuccessMsg(callbackUrl ? "Signed in! Redirecting..." : "Signed in!");
+        handleSuccessRedirect(400);
       }
     } catch {
       setError("Something went wrong. Please try again.");
@@ -83,8 +95,8 @@ export default function AuthModal({
         setError("Account created! Please sign in manually.");
         setTab("signin");
       } else {
-        setSuccessMsg("Account created and signed in!");
-        setTimeout(onSuccess, 600);
+        setSuccessMsg(callbackUrl ? "Account created! Redirecting..." : "Account created and signed in!");
+        handleSuccessRedirect(500);
       }
     } catch {
       setError("Something went wrong. Please try again.");

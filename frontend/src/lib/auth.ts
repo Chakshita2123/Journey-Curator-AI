@@ -53,6 +53,9 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
       return session;
     },
   },
+  pages: {
+    signIn: "/signin",
+  },
   // NextAuth v5 uses AUTH_SECRET; fall back to NEXTAUTH_SECRET for compatibility
   secret: process.env.AUTH_SECRET ?? process.env.NEXTAUTH_SECRET,
 });

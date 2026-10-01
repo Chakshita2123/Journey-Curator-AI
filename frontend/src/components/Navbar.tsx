@@ -136,7 +136,7 @@ export default function Navbar() {
                   </div>
                 )}
               </div>
-            ) : (
+            ) : pathname === "/signin" ? null : (
               <button
                 id="nav-signin-btn"
                 onClick={() => setShowAuth(true)}
@@ -195,7 +195,7 @@ export default function Navbar() {
               >
                 <LogOut className="w-4 h-4" /> Sign Out
               </button>
-            ) : (
+            ) : pathname === "/signin" ? null : (
               <button
                 onClick={() => { setShowAuth(true); setMenuOpen(false); }}
                 className="flex items-center justify-center gap-2 py-2.5 px-4 rounded-xl text-sm font-medium text-[var(--color-coral)] border border-[var(--color-coral-mid)] hover:bg-[var(--color-coral-light)] transition-colors"
@@ -211,6 +211,7 @@ export default function Navbar() {
         <AuthModal
           onClose={() => setShowAuth(false)}
           onSuccess={() => setShowAuth(false)}
+          callbackUrl={pathname !== "/signin" ? pathname : "/discover"}
         />
       )}
     </>
