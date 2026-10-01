@@ -1,5 +1,5 @@
 import { NextResponse } from "next/server";
-import { getAllDatasetDestinations } from "../all-destinations/route";
+import { getAllDatasetDestinations } from "@/lib/destinations";
 import fs from "fs";
 import path from "path";
 

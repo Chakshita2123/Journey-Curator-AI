@@ -92,82 +92,86 @@ export default function SampleItineraryShowcase() {
               viewport={{ once: true }}
               transition={{ duration: 0.45, delay: index * 0.1 }}
             >
-              <TiltCard
-                maxTilt={6}
+              <div
                 onClick={() => setActiveModalId(item.id)}
-                className="card overflow-hidden flex flex-col justify-between h-full cursor-pointer select-none group border border-[var(--color-border)] hover:border-[var(--color-coral-mid)] transition-all duration-300 shadow-soft"
+                className="h-full cursor-pointer"
               >
-                <div>
-                  {/* Photo Header */}
-                  <div className="h-44 w-full relative overflow-hidden img-card-container indigo-duotone-overlay">
-                    <img
-                      src={photoUrl}
-                      alt={item.title}
-                      className="w-full h-full object-cover img-card-zoom"
-                    />
-                    <div className="absolute top-3 left-3 z-10">
-                      <span className="inline-flex items-center gap-1 text-[11px] font-bold px-3 py-1 rounded-full bg-white/95 text-[var(--color-coral-dark)] shadow-xs">
-                        <User className="w-3 h-3 text-[var(--color-coral)]" />
-                        {item.persona_badge}
-                      </span>
-                    </div>
-                    <div className="absolute top-3 right-3 z-10">
-                      <span className="inline-flex items-center gap-1 text-[11px] font-bold px-2.5 py-1 rounded-full bg-black/60 backdrop-blur-md text-amber-300 shadow-xs">
-                        <Sparkles className="w-3 h-3 text-amber-300" />
-                        ✨ AI Generated
-                      </span>
-                    </div>
-                    <div className="absolute bottom-3 left-3 right-3 z-10 text-white">
-                      <h3 className="font-heading font-800 text-lg leading-snug drop-shadow-md">
-                        {item.flag} {item.title}
-                      </h3>
-                    </div>
-                  </div>
-
-                  {/* Body Content */}
-                  <div className="p-5">
-                    <div className="flex items-center gap-3 text-xs text-[var(--color-muted)] font-semibold mb-3">
-                      <span className="flex items-center gap-1">
-                        <Clock className="w-3.5 h-3.5 text-[var(--color-coral)]" /> {item.duration} Days
-                      </span>
-                      <span>·</span>
-                      <span className="flex items-center gap-1">
-                        <MapPin className="w-3.5 h-3.5 text-[var(--color-teal)]" /> {item.destination}
-                      </span>
-                      <span>·</span>
-                      <span className="text-[var(--color-coral-dark)] font-bold">
-                        ₹{item.budget.toLocaleString()}
-                      </span>
-                    </div>
-
-                    {/* Day 1 Teaser Preview */}
-                    <div className="p-3.5 rounded-xl bg-[var(--color-bg)] border border-[var(--color-border)] mb-2">
-                      <div className="flex items-center justify-between mb-1">
-                        <span className="text-xs font-bold text-[var(--color-text)]">
-                          Day 1: {day1?.title}
-                        </span>
-                        <span className="text-[10px] font-semibold px-2 py-0.5 rounded-full bg-white text-[var(--color-muted)] border border-[var(--color-border)]">
-                          Teaser
+                <TiltCard
+                  maxTilt={6}
+                  className="card overflow-hidden flex flex-col justify-between h-full cursor-pointer select-none group border border-[var(--color-border)] hover:border-[var(--color-coral-mid)] transition-all duration-300 shadow-soft"
+                >
+                  <div>
+                    {/* Photo Header */}
+                    <div className="h-44 w-full relative overflow-hidden img-card-container indigo-duotone-overlay">
+                      <img
+                        src={photoUrl}
+                        alt={item.title}
+                        className="w-full h-full object-cover img-card-zoom"
+                      />
+                      <div className="absolute top-3 left-3 z-10">
+                        <span className="inline-flex items-center gap-1 text-[11px] font-bold px-3 py-1 rounded-full bg-white/95 text-[var(--color-coral-dark)] shadow-xs">
+                          <User className="w-3 h-3 text-[var(--color-coral)]" />
+                          {item.persona_badge}
                         </span>
                       </div>
-                      <p className="text-xs text-[var(--color-muted)] line-clamp-2 leading-relaxed font-medium">
-                        {day1?.summary}
-                      </p>
+                      <div className="absolute top-3 right-3 z-10">
+                        <span className="inline-flex items-center gap-1 text-[11px] font-bold px-2.5 py-1 rounded-full bg-black/60 backdrop-blur-md text-amber-300 shadow-xs">
+                          <Sparkles className="w-3 h-3 text-amber-300" />
+                          ✨ AI Generated
+                        </span>
+                      </div>
+                      <div className="absolute bottom-3 left-3 right-3 z-10 text-white">
+                        <h3 className="font-heading font-800 text-lg leading-snug drop-shadow-md">
+                          {item.flag} {item.title}
+                        </h3>
+                      </div>
+                    </div>
+
+                    {/* Body Content */}
+                    <div className="p-5">
+                      <div className="flex items-center gap-3 text-xs text-[var(--color-muted)] font-semibold mb-3">
+                        <span className="flex items-center gap-1">
+                          <Clock className="w-3.5 h-3.5 text-[var(--color-coral)]" /> {item.duration} Days
+                        </span>
+                        <span>·</span>
+                        <span className="flex items-center gap-1">
+                          <MapPin className="w-3.5 h-3.5 text-[var(--color-teal)]" /> {item.destination}
+                        </span>
+                        <span>·</span>
+                        <span className="text-[var(--color-coral-dark)] font-bold">
+                          ₹{item.budget.toLocaleString()}
+                        </span>
+                      </div>
+
+                      {/* Day 1 Teaser Preview */}
+                      <div className="p-3.5 rounded-xl bg-[var(--color-bg)] border border-[var(--color-border)] mb-2">
+                        <div className="flex items-center justify-between mb-1">
+                          <span className="text-xs font-bold text-[var(--color-text)]">
+                            Day 1: {day1?.title}
+                          </span>
+                          <span className="text-[10px] font-semibold px-2 py-0.5 rounded-full bg-white text-[var(--color-muted)] border border-[var(--color-border)]">
+                            Teaser
+                          </span>
+                        </div>
+                        <p className="text-xs text-[var(--color-muted)] line-clamp-2 leading-relaxed font-medium">
+                          {day1?.summary}
+                        </p>
+                      </div>
                     </div>
                   </div>
-                </div>
 
-                {/* Footer Indicator & Expansion Button */}
-                <div className="pt-3 border-t border-[var(--color-border)] flex items-center justify-between">
-                  <span className="text-xs font-bold text-[var(--color-coral-dark)] px-2.5 py-1 rounded-lg bg-[var(--color-coral-light)]">
-                    +{remainingDays} more days planned
-                  </span>
-                  <span className="inline-flex items-center gap-1 text-xs font-bold text-[var(--color-coral)] group-hover:translate-x-1 transition-transform">
-                    View Full Itinerary
-                    <ChevronRight className="w-4 h-4" />
-                  </span>
-                </div>
-              </TiltCard>
+                  {/* Footer Indicator & Expansion Button */}
+                  <div className="pt-3 border-t border-[var(--color-border)] flex items-center justify-between">
+                    <span className="text-xs font-bold text-[var(--color-coral-dark)] px-2.5 py-1 rounded-lg bg-[var(--color-coral-light)]">
+                      +{remainingDays} more days planned
+                    </span>
+                    <span className="inline-flex items-center gap-1 text-xs font-bold text-[var(--color-coral)] group-hover:translate-x-1 transition-transform">
+                      View Full Itinerary
+                      <ChevronRight className="w-4 h-4" />
+                    </span>
+                  </div>
+                </TiltCard>
+              </div>
             </motion.div>
           );
         })}
@@ -208,7 +212,6 @@ export default function SampleItineraryShowcase() {
             <motion.div
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
-              exit={{ opacity: 0 }}
               onClick={() => setActiveModalId(null)}
               className="fixed inset-0 bg-[#2D2A4A]/60 backdrop-blur-sm"
             />
@@ -217,7 +220,6 @@ export default function SampleItineraryShowcase() {
             <motion.div
               initial={{ opacity: 0, scale: 0.95, y: 20 }}
               animate={{ opacity: 1, scale: 1, y: 0 }}
-              exit={{ opacity: 0, scale: 0.95, y: 20 }}
               transition={{ duration: 0.3 }}
               className="relative w-full max-w-4xl max-h-[90vh] bg-white rounded-3xl shadow-2xl border border-[var(--color-border-mid)] overflow-y-auto z-10 p-6 md:p-8"
             >
@@ -388,4 +390,4 @@ export default function SampleItineraryShowcase() {
       </AnimatePresence>
     </section>
   );
-}
+} 

@@ -2,7 +2,7 @@
 
 import { useState, useEffect, useRef, useCallback } from "react";
 import { useRouter } from "next/navigation";
-import { MapPin, ArrowRight } from "lucide-react";
+import { MapPin, ArrowRight, Map as MapIcon } from "lucide-react";
 import type { DestinationRecommendation, RecommendDestinationsResponse } from "@/types/api";
 import { motion, TiltCard, AnimatedProgressBar, LoadingStateCard, ErrorStateCard } from "@/components/motion";
 import { useUserJourney } from "@/context/UserJourneyContext";
@@ -17,19 +17,19 @@ function getDestPhoto(name: string, category: string): string {
 // ─── Category helpers ───────────────────────────────────────────────────────
 function getCategoryGradient(category: string): string {
   const g: Record<string, string> = {
-    Natural:   "linear-gradient(135deg,#00B894 0%,#008F73 100%)",
+    Natural: "linear-gradient(135deg,#00B894 0%,#008F73 100%)",
     Adventure: "linear-gradient(135deg,#6C5CE7 0%,#4C3DBA 100%)",
-    Cultural:  "linear-gradient(135deg,#4C3DBA 0%,#2D2A4A 100%)",
+    Cultural: "linear-gradient(135deg,#4C3DBA 0%,#2D2A4A 100%)",
     Religious: "linear-gradient(135deg,#e17055 0%,#d63031 100%)",
-    Historic:  "linear-gradient(135deg,#6C5CE7 0%,#5A4BD1 100%)",
-    Monument:  "linear-gradient(135deg,#4C3DBA 0%,#6C5CE7 100%)",
-    Resort:    "linear-gradient(135deg,#00B894 0%,#55EFC4 100%)",
+    Historic: "linear-gradient(135deg,#6C5CE7 0%,#5A4BD1 100%)",
+    Monument: "linear-gradient(135deg,#4C3DBA 0%,#6C5CE7 100%)",
+    Resort: "linear-gradient(135deg,#00B894 0%,#55EFC4 100%)",
   };
   return g[category] || "linear-gradient(135deg,#6C5CE7 0%,#00B894 100%)";
 }
 function getCategoryTextColor(category: string): string {
   const c: Record<string, string> = {
-    Natural:   "#008F73", Adventure: "#4C3DBA", Cultural: "#2D2A4A",
+    Natural: "#008F73", Adventure: "#4C3DBA", Cultural: "#2D2A4A",
     Religious: "#c0392b", Historic: "#6C5CE7", Monument: "#4C3DBA", Resort: "#007A5C",
   };
   return c[category] || "#6C5CE7";
@@ -267,10 +267,10 @@ export default function DestinationRecommendations() {
           {/* Meta 2×2 */}
           <div className="grid grid-cols-2 gap-x-4 gap-y-1.5 pt-2 border-t border-[var(--color-border)]">
             {[
-              { label: "Best Season",  value: active.ideal_season },
-              { label: "Travel Type",  value: active.best_travel_type },
-              { label: "State",        value: active.state },
-              { label: "Coordinates",  value: `${active.latitude.toFixed(2)}, ${active.longitude.toFixed(2)}`, mono: true },
+              { label: "Best Season", value: active.ideal_season },
+              { label: "Travel Type", value: active.best_travel_type },
+              { label: "State", value: active.state },
+              { label: "Coordinates", value: `${active.latitude.toFixed(2)}, ${active.longitude.toFixed(2)}`, mono: true },
             ].map(({ label, value, mono }) => (
               <div key={label}>
                 <p className="text-[10px] font-semibold text-[var(--color-muted)] uppercase tracking-wider">{label}</p>
@@ -319,11 +319,10 @@ export default function DestinationRecommendations() {
               <button
                 key={i}
                 onClick={() => handleUserNav(i)}
-                className={`h-1.5 rounded-full transition-all duration-300 ${
-                  i === safeIndex
+                className={`h-1.5 rounded-full transition-all duration-300 ${i === safeIndex
                     ? "w-6 bg-[var(--color-coral)]"
                     : "w-1.5 bg-[var(--color-border-mid)]"
-                }`}
+                  }`}
                 aria-label={`Go to destination ${i + 1}`}
               />
             ))}

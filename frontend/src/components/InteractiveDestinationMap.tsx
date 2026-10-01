@@ -295,10 +295,10 @@ const DESTINATIONS: MapDestination[] = [
 ];
 
 const CATEGORY_STYLES: Record<string, { bg: string; text: string; dot: string; border: string }> = {
-  Historic:  { bg: "#EEECFC", text: "#6C5CE7", dot: "#6C5CE7", border: "#A29BFE" },
-  Natural:   { bg: "#E6F8F4", text: "#008F73", dot: "#00B894", border: "#55EFC4" },
+  Historic: { bg: "#EEECFC", text: "#6C5CE7", dot: "#6C5CE7", border: "#A29BFE" },
+  Natural: { bg: "#E6F8F4", text: "#008F73", dot: "#00B894", border: "#55EFC4" },
   Religious: { bg: "#FFF0EB", text: "#E05A36", dot: "#FF9776", border: "#FF9776" },
-  Cultural:  { bg: "#F3E8FF", text: "#7E22CE", dot: "#A855F7", border: "#C084FC" },
+  Cultural: { bg: "#F3E8FF", text: "#7E22CE", dot: "#A855F7", border: "#C084FC" },
   Adventure: { bg: "#FEF3C7", text: "#B45309", dot: "#F59E0B", border: "#FCD34D" },
 };
 
@@ -535,11 +535,10 @@ export default function InteractiveDestinationMap() {
                   setCurrentIndex(0);
                   setIsAutoRotating(true);
                 }}
-                className={`px-4 py-2 rounded-xl text-xs font-semibold transition-all duration-200 flex items-center gap-1.5 cursor-pointer ${
-                  isActive
-                    ? "bg-[#6C5CE7] text-white shadow-coral"
-                    : "bg-white text-[var(--color-muted)] hover:text-[var(--color-text)] border border-[var(--color-border)] shadow-xs hover:border-[var(--color-coral-mid)]"
-                }`}
+                className={`px-4 py-2 rounded-xl text-xs font-semibold transition-all duration-200 flex items-center gap-1.5 cursor-pointer ${isActive
+                  ? "bg-[#6C5CE7] text-white shadow-coral"
+                  : "bg-white text-[var(--color-muted)] hover:text-[var(--color-text)] border border-[var(--color-border)] shadow-xs hover:border-[var(--color-coral-mid)]"
+                  }`}
               >
                 {cat === "All" && "🌐 All Places"}
                 {cat === "Historic" && "🏰 Historic"}
@@ -555,11 +554,10 @@ export default function InteractiveDestinationMap() {
         {/* Auto-Play Toggle Controls */}
         <button
           onClick={() => setIsAutoRotating(!isAutoRotating)}
-          className={`inline-flex items-center gap-2 px-4 py-2 rounded-xl text-xs font-bold transition-all duration-200 cursor-pointer shadow-xs border ${
-            isAutoRotating
-              ? "bg-[#E6F8F4] text-[#008F73] border-[#55EFC4]/50 hover:bg-[#d0f3eb]"
-              : "bg-[#FFF0EB] text-[#E05A36] border-[#FF9776]/50 hover:bg-[#ffe3da]"
-          }`}
+          className={`inline-flex items-center gap-2 px-4 py-2 rounded-xl text-xs font-bold transition-all duration-200 cursor-pointer shadow-xs border ${isAutoRotating
+            ? "bg-[#E6F8F4] text-[#008F73] border-[#55EFC4]/50 hover:bg-[#d0f3eb]"
+            : "bg-[#FFF0EB] text-[#E05A36] border-[#FF9776]/50 hover:bg-[#ffe3da]"
+            }`}
         >
           {isAutoRotating ? (
             <>
@@ -583,13 +581,12 @@ export default function InteractiveDestinationMap() {
         />
 
         {/* Selected Pin Info Card with Smooth Fade + Slide Animation */}
-        <AnimatePresence mode="wait">
+        <AnimatePresence>
           {selectedDest && (
             <motion.div
               key={selectedDest.id}
               initial={{ opacity: 0, y: 24, scale: 0.95 }}
               animate={{ opacity: 1, y: 0, scale: 1 }}
-              exit={{ opacity: 0, y: -16, scale: 0.95 }}
               transition={{ duration: 0.45, ease: "easeOut" }}
               className="absolute bottom-6 left-6 right-6 md:left-8 md:right-auto md:max-w-md z-20 bg-white/95 backdrop-blur-md p-5 rounded-2xl border border-[var(--color-border-mid)] shadow-coral"
             >

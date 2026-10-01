@@ -1,5 +1,5 @@
 import { NextResponse } from "next/server";
-import { getAllDatasetDestinations } from "../all-destinations/route";
+import { getAllDatasetDestinations } from "@/lib/destinations";
 import { getVerifiedDestinationImage, DESTINATION_IMAGES, CATEGORY_FALLBACK_IMAGES } from "@/data/destinationImages";
 
 export async function GET() {
