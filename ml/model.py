@@ -18,6 +18,12 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 MODEL_PATH = BASE_DIR / "models" / "cost_predictor.joblib"
 PREPROCESSOR_PATH = BASE_DIR / "models" / "preprocessor.joblib"
 
+# ── Singleton caches (lazy, loaded once per process) ────────────────────────
+_model_cache = None
+_preprocessor_cache = None
+# Small lookup built once from the CSV: {normalised_name: season_str}
+_season_lookup: dict[str, str] | None = None
+
 
 class ModelLoadError(Exception):
     pass
@@ -250,6 +256,11 @@ def train_and_evaluate(
 
 
 def load_model() -> Any:
+    """Return the singleton cost-predictor pipeline (loads from disk once)."""
+    global _model_cache
+    if _model_cache is not None:
+        return _model_cache
+
     candidate_paths = [MODEL_PATH]
     if not MODEL_PATH.exists():
         model_dir = MODEL_PATH.parent
@@ -258,12 +269,18 @@ def load_model() -> Any:
 
     for path in candidate_paths:
         if path.exists():
-            return joblib.load(path)
+            _model_cache = joblib.load(path)
+            return _model_cache
 
     raise ModelLoadError("Trained model not found. Run ml/train.py to train the model first.")
 
 
 def load_preprocessor() -> Any:
+    """Return the singleton preprocessor (loads from disk once)."""
+    global _preprocessor_cache
+    if _preprocessor_cache is not None:
+        return _preprocessor_cache
+
     candidate_paths = [PREPROCESSOR_PATH]
     if not PREPROCESSOR_PATH.exists():
         model_dir = PREPROCESSOR_PATH.parent
@@ -272,7 +289,8 @@ def load_preprocessor() -> Any:
 
     for path in candidate_paths:
         if path.exists():
-            return joblib.load(path)
+            _preprocessor_cache = joblib.load(path)
+            return _preprocessor_cache
 
     raise ModelLoadError("Preprocessor artifact not found. Run ml/train.py to create preprocessing artifacts.")
 
@@ -388,45 +406,68 @@ FALLBACK_DESTINATION_SEASONS = {
 }
 
 
-def get_destination_best_season(destination: str) -> dict[str, str]:
-    if not destination or not destination.strip():
-        return {"best_season_raw": "Winter", "best_season": "Winter (Oct - Mar)"}
-    
-    dest_clean = destination.strip().lower()
+def _build_season_lookup() -> dict[str, str]:
+    """Build a compact {lowercased_key: season} dict from the CSV once.
 
-    # Try lookup in dataset
+    We load only 4 columns (place_name, city, state, season) to avoid
+    the ~50-100 MB RSS hit of re-reading all 34 columns on every request.
+    """
+    lookup: dict[str, str] = {}
+    csv_path = BASE_DIR / "data" / "indian_tourist_places_dataset.csv"
+    if not csv_path.exists():
+        return lookup
     try:
-        csv_path = BASE_DIR / "data" / "indian_tourist_places_dataset.csv"
-        if csv_path.exists():
-            df_dest = pd.read_csv(csv_path)
-            matches = df_dest[
-                df_dest['place_name'].astype(str).str.lower().str.contains(dest_clean, regex=False) |
-                df_dest['city'].astype(str).str.lower().str.contains(dest_clean, regex=False) |
-                df_dest['state'].astype(str).str.lower().str.contains(dest_clean, regex=False)
-            ]
-            if not matches.empty:
-                s_val = str(matches.iloc[0]['season'])
-                s_disp_map = {
-                    "Winter": "Winter (Oct - Mar) — Peak tourist season",
-                    "Summer": "Summer (Mar - Jun) — Cool hill getaway",
-                    "Spring": "Spring (Feb - Apr) — Pleasant bloom season",
-                    "Monsoon": "Monsoon / Post-Monsoon (Jul - Oct) — Scenic greenery",
-                    "Fall": "Fall / Autumn (Sep - Nov) — Clear skies & mild weather",
-                }
-                return {
-                    "best_season_raw": s_val,
-                    "best_season": s_disp_map.get(s_val, f"{s_val} (Optimal Time)"),
-                }
+        df_small = pd.read_csv(
+            csv_path,
+            usecols=["place_name", "city", "state", "season"],
+            dtype={"place_name": str, "city": str, "state": str, "season": str},
+        )
+        # Build a mapping: normalised name/city/state → season (first occurrence wins)
+        for col in ("place_name", "city", "state"):
+            for val, season in zip(df_small[col].str.lower(), df_small["season"]):
+                if val and val not in lookup:
+                    lookup[val] = season
     except Exception:
         pass
+    return lookup
 
-    # Fallback lookup dictionary
-    for k, (s_val, s_disp) in FALLBACK_DESTINATION_SEASONS.items():
-        if k in dest_clean:
+
+def get_destination_best_season(destination: str) -> dict[str, str]:
+    """Return the best season for a destination.
+
+    Builds the lookup dict from the CSV on the FIRST call only (singleton);
+    subsequent calls use the cached in-memory dict — no disk I/O.
+    """
+    global _season_lookup
+    if not destination or not destination.strip():
+        return {"best_season_raw": "Winter", "best_season": "Winter (Oct - Mar)"}
+
+    dest_clean = destination.strip().lower()
+
+    # Build the lookup once
+    if _season_lookup is None:
+        _season_lookup = _build_season_lookup()
+
+    s_disp_map = {
+        "Winter": "Winter (Oct - Mar) — Peak tourist season",
+        "Summer": "Summer (Mar - Jun) — Cool hill getaway",
+        "Spring": "Spring (Feb - Apr) — Pleasant bloom season",
+        "Monsoon": "Monsoon / Post-Monsoon (Jul - Oct) — Scenic greenery",
+        "Fall": "Fall / Autumn (Sep - Nov) — Clear skies & mild weather",
+    }
+
+    # Try partial match against every key in the lookup
+    for key, s_val in _season_lookup.items():
+        if dest_clean in key or key in dest_clean:
             return {
                 "best_season_raw": s_val,
-                "best_season": s_disp,
+                "best_season": s_disp_map.get(s_val, f"{s_val} (Optimal Time)"),
             }
+
+    # Fallback to hardcoded dict
+    for k, (s_val, s_disp) in FALLBACK_DESTINATION_SEASONS.items():
+        if k in dest_clean:
+            return {"best_season_raw": s_val, "best_season": s_disp}
 
     return {"best_season_raw": "Winter", "best_season": "Winter (Oct - Mar) — Pleasant travel season"}
 
