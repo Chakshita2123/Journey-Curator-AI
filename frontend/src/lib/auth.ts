@@ -4,6 +4,9 @@ import bcrypt from "bcryptjs";
 import clientPromise from "@/lib/mongodb";
 
 export const { handlers, auth, signIn, signOut } = NextAuth({
+  // Required when running behind a reverse proxy (Render, Vercel, etc.)
+  // Without this NextAuth rejects requests whose Host header doesn't match NEXTAUTH_URL
+  trustHost: true,
   providers: [
     Credentials({
       name: "credentials",
@@ -50,5 +53,6 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
       return session;
     },
   },
-  secret: process.env.NEXTAUTH_SECRET,
+  // NextAuth v5 uses AUTH_SECRET; fall back to NEXTAUTH_SECRET for compatibility
+  secret: process.env.AUTH_SECRET ?? process.env.NEXTAUTH_SECRET,
 });

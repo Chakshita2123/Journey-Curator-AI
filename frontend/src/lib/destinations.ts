@@ -15,11 +15,41 @@ export interface DestinationItem {
   travel_type: string;
 }
 
-export function getAllDatasetDestinations(): DestinationItem[] {
-  const csvPath = path.resolve(process.cwd(), "../data/indian_tourist_places_dataset.csv");
-  if (!fs.existsSync(csvPath)) {
-    throw new Error(`CSV not found at: ${csvPath}`);
+/**
+ * Resolves the path to the CSV dataset, supporting multiple deployment configurations:
+ * - Local dev (Next.js CWD = frontend/): ../data/
+ * - Render (full repo is cloned, CWD = /opt/render/project/src/frontend): ../../data/ won't exist,
+ *   but Render clones at /opt/render/project/src so ../data/ from frontend/ IS accessible.
+ * - Override via DATASET_CSV_PATH env var for other setups.
+ */
+function resolveCsvPath(): string {
+  // 1. Allow explicit override via env var (most reliable for custom deployments)
+  if (process.env.DATASET_CSV_PATH) {
+    return process.env.DATASET_CSV_PATH;
   }
+
+  const cwd = process.cwd();
+  const candidates = [
+    // Primary: works locally AND on Render (frontend/ is CWD, data/ is at repo root = ../data/)
+    path.resolve(cwd, "../data/indian_tourist_places_dataset.csv"),
+    // Secondary: in case Next.js resolves CWD differently in production build
+    path.resolve(cwd, "../../data/indian_tourist_places_dataset.csv"),
+    // Tertiary: data/ co-located inside the frontend dir (if user copies it there)
+    path.resolve(cwd, "data/indian_tourist_places_dataset.csv"),
+  ];
+
+  for (const p of candidates) {
+    if (fs.existsSync(p)) return p;
+  }
+
+  throw new Error(
+    `CSV dataset not found. Searched:\n${candidates.join("\n")}\n` +
+    `Set the DATASET_CSV_PATH env var to the absolute path of indian_tourist_places_dataset.csv.`
+  );
+}
+
+export function getAllDatasetDestinations(): DestinationItem[] {
+  const csvPath = resolveCsvPath();
   const content = fs.readFileSync(csvPath, "utf-8");
   const lines = content.split("\n").filter((l) => l.trim().length > 0);
 
